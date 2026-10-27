@@ -9,6 +9,8 @@ interface Props {
   musculosSecundarios?: string[];
   ancho?: number;
   alto?: number;
+  /** Texto de la leyenda ámbar (por defecto "Secundario"). */
+  textoSecundario?: string;
 }
 
 const NOMBRES_GRUPOS: Record<string, string> = {
@@ -30,6 +32,7 @@ export default function MapaMuscular({
   musculosSecundarios = [],
   ancho = 260,
   alto = 280,
+  textoSecundario = 'Secundario',
 }: Props) {
   const principal = musculoPrincipal?.toLowerCase() ?? '';
   const secundarios = musculosSecundarios.map(m => m.toLowerCase());
@@ -159,7 +162,7 @@ export default function MapaMuscular({
         {secundarios.length > 0 && (
           <span className="fila" style={{ gap: 6, alignItems: 'center' }}>
             <span style={{ width: 12, height: 12, borderRadius: 3, background: '#F59E0B', display: 'inline-block' }} />
-            <b>Secundario:</b> {secundarios.map(s => NOMBRES_GRUPOS[s] ?? s).join(', ')}
+            <b>{textoSecundario}:</b> {secundarios.map(s => NOMBRES_GRUPOS[s] ?? s).join(', ')}
           </span>
         )}
       </div>

@@ -36,8 +36,8 @@ export default function ModalFichaEjercicio({ ejercicioId, onCerrar }: Props) {
   }, [ejercicioId]);
 
   return (
-    <div className="modal-fondo" role="dialog" aria-modal="true" onClick={onCerrar}>
-      <div className="modal-tarjeta stack" style={{ maxHeight: '90vh', overflowY: 'auto', gap: 16 }} onClick={e => e.stopPropagation()}>
+    <div className="velo" role="dialog" aria-modal="true" onClick={onCerrar}>
+      <div className="hoja stack" style={{ gap: 16 }} onClick={e => e.stopPropagation()}>
         <div className="fila" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: 18 }}>Detalles del ejercicio</h2>
           <button className="btn btn-texto" onClick={onCerrar} style={{ fontSize: 18, padding: '4px 8px' }}>✕</button>

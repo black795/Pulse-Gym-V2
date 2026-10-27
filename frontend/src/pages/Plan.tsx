@@ -64,8 +64,11 @@ export default function Plan() {
     <div className="pantalla stack" style={{ gap: 16 }}>
       <header className="stack" style={{ gap: 6, paddingTop: 8 }}>
         <div className="fila" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-          <h1 style={{ fontSize: 24 }}>Mi plan semanal</h1>
-          {plan && <Insignia tono={plan.origen === 'reglas' ? 'neutro' : 'ok'}>Versión {plan.version} · {ORIGEN[plan.origen]}</Insignia>}
+          <div className="fila" style={{ flexWrap: 'wrap' }}>
+            <h1 style={{ fontSize: 24 }}>Mi plan semanal</h1>
+            {plan && <Insignia tono={plan.origen === 'reglas' ? 'neutro' : 'ok'}>Versión {plan.version} · {ORIGEN[plan.origen]}</Insignia>}
+          </div>
+          {plan && !editarDias && <BotonRegenerar className="solo-escritorio btn-auto" restantes={estado!.regeneraciones_restantes} disabled={armando} onClick={() => setEditarDias(true)} />}
         </div>
         {!plan && <p className="muted" style={{ fontSize: 14 }}>Elige qué días entrenas y armamos tu semana según tu objetivo, tu cuerpo y tus lesiones.</p>}
       </header>
@@ -142,15 +145,19 @@ export default function Plan() {
 
           {dia && <DiaDelPlan dia={dia} />}
 
-          {!editarDias && (
-            <button className="btn btn-claro" disabled={armando || estado!.regeneraciones_restantes === 0} onClick={() => setEditarDias(true)}>
-              <IconRefresh width={18} height={18} />
-              {estado!.regeneraciones_restantes === 0 ? 'Ya regeneraste 3 veces hoy' : `Regenerar o cambiar días (quedan ${estado!.regeneraciones_restantes})`}
-            </button>
-          )}
+          {!editarDias && <BotonRegenerar className="solo-movil" restantes={estado!.regeneraciones_restantes} disabled={armando} onClick={() => setEditarDias(true)} />}
         </>
       )}
     </div>
+  );
+}
+
+function BotonRegenerar({ className, restantes, disabled, onClick }: { className: string; restantes: number; disabled: boolean; onClick: () => void }) {
+  return (
+    <button className={`btn btn-claro ${className}`} disabled={disabled || restantes === 0} onClick={onClick}>
+      <IconRefresh width={18} height={18} />
+      {restantes === 0 ? 'Ya regeneraste 3 veces hoy' : `Regenerar o cambiar días (quedan ${restantes})`}
+    </button>
   );
 }
 
@@ -165,24 +172,26 @@ function DiaDelPlan({ dia }: { dia: RutinaDia }) {
         </p>
         {dia.explicacion && <p style={{ fontSize: 13.5, lineHeight: 1.45 }}>{dia.explicacion}</p>}
       </div>
-      {dia.ejercicios.map(e => (
-        <article key={e.id} className="card ejercicio">
-          <span className="ejercicio-orden">{e.orden}</span>
-          <div className="stack" style={{ gap: 4, minWidth: 0 }}>
-            <div className="fila" style={{ gap: 8, flexWrap: 'wrap' }}>
-              <b style={{ fontSize: 15 }}>{e.ejercicio.nombre}</b>
-              {e.precaucion && <Insignia tono="aviso">Con precaución</Insignia>}
+      <div className="grilla-ejercicios">
+        {dia.ejercicios.map(e => (
+          <article key={e.id} className="card ejercicio">
+            <span className="ejercicio-orden">{e.orden}</span>
+            <div className="stack" style={{ gap: 4, minWidth: 0 }}>
+              <div className="fila" style={{ gap: 8, flexWrap: 'wrap' }}>
+                <b style={{ fontSize: 15 }}>{e.ejercicio.nombre}</b>
+                {e.precaucion && <Insignia tono="aviso">Con precaución</Insignia>}
+              </div>
+              <span className="muted" style={{ fontSize: 12.5 }}>
+                {e.ejercicio.musculo_principal} · {e.ejercicio.maquinas.length ? e.ejercicio.maquinas.join(' o ') : EQUIPO[e.ejercicio.categoria_equipo]}
+              </span>
+              <span style={{ fontSize: 14, fontWeight: 700 }}>
+                {e.series} series × {repeticiones(e.reps_min, e.reps_max)} reps · descanso {descanso(e.descanso_seg)}
+              </span>
+              {e.motivo && <span className="muted" style={{ fontSize: 13 }}>{e.motivo}</span>}
             </div>
-            <span className="muted" style={{ fontSize: 12.5 }}>
-              {e.ejercicio.musculo_principal} · {e.ejercicio.maquinas.length ? e.ejercicio.maquinas.join(' o ') : EQUIPO[e.ejercicio.categoria_equipo]}
-            </span>
-            <span style={{ fontSize: 14, fontWeight: 700 }}>
-              {e.series} series × {repeticiones(e.reps_min, e.reps_max)} reps · descanso {descanso(e.descanso_seg)}
-            </span>
-            {e.motivo && <span className="muted" style={{ fontSize: 13 }}>{e.motivo}</span>}
-          </div>
-        </article>
-      ))}
+          </article>
+        ))}
+      </div>
     </section>
   );
 }

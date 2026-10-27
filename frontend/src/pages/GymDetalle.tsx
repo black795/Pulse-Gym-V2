@@ -97,7 +97,7 @@ export default function GymDetalle() {
           </button>
         </header>
       ) : (
-        <form className="card stack" onSubmit={guardarDatos}>
+        <form className="card stack form-angosto" onSubmit={guardarDatos}>
           <Campo etiqueta="Nombre" maxLength={60} required value={form.nombre} onChange={e => setForm(p => ({ ...p, nombre: e.target.value }))} />
           <Campo etiqueta="Ubicación (opcional)" maxLength={120} value={form.ubicacion} onChange={e => setForm(p => ({ ...p, ubicacion: e.target.value }))} />
           <button className="btn" disabled={!form.nombre.trim() || ocupado}>Guardar</button>
@@ -119,13 +119,13 @@ export default function GymDetalle() {
           <p className="muted" style={{ fontSize: 14 }}>
             Toma fotos de tus máquinas para que la IA las reconozca, o agrégalas directamente desde el catálogo oficial.
           </p>
-          <div className="grid-2">
+          <div className="grid-2 acciones">
             <Link to={`/gyms/${id}/agregar`} className="btn btn-neon"><IconCamera width={20} height={20} /> Tomar fotos</Link>
             <button type="button" className="btn btn-claro" onClick={() => setModalCatalogo(true)}><IconSearch width={18} height={18} /> Desde catálogo</button>
           </div>
         </div>
       ) : (
-        <div className="grid-2">
+        <div className="grid-2 acciones">
           <Link to={`/gyms/${id}/agregar`} className="btn btn-neon"><IconCamera width={20} height={20} /> Tomar fotos</Link>
           <button type="button" className="btn btn-claro" onClick={() => setModalCatalogo(true)}><IconSearch width={18} height={18} /> Desde catálogo</button>
         </div>
@@ -134,14 +134,16 @@ export default function GymDetalle() {
       {activas.length > 0 && (
         <section className="stack" style={{ gap: 10 }}>
           <h2 style={{ fontSize: 16 }}>Máquinas ({activas.length})</h2>
-          {activas.map(m => <FilaMaquina key={m.id} gymId={id} m={m} onCambio={reemplazar} onQuitada={cargar} onError={setError} />)}
+          <div className="grilla-tarjetas">
+            {activas.map(m => <FilaMaquina key={m.id} gymId={id} m={m} onCambio={reemplazar} onQuitada={cargar} onError={setError} />)}
+          </div>
         </section>
       )}
 
       {retiradas.length > 0 && (
         <details className="card">
           <summary style={{ cursor: 'pointer', fontWeight: 700, minHeight: 28 }}>Ya no están en el gym ({retiradas.length})</summary>
-          <div className="stack" style={{ gap: 10, marginTop: 12 }}>
+          <div className="grilla-tarjetas" style={{ marginTop: 12 }}>
             {retiradas.map(m => <FilaMaquina key={m.id} gymId={id} m={m} onCambio={reemplazar} onQuitada={cargar} onError={setError} />)}
           </div>
         </details>
@@ -169,7 +171,7 @@ export default function GymDetalle() {
         <h2 style={{ fontSize: 15, color: 'var(--danger)' }}>Eliminar este gym</h2>
         <p className="muted" style={{ fontSize: 13.5 }}>Se borran sus máquinas y sus fotos. Tu historial de entrenamientos se conserva.</p>
         {!confirmaBorrar
-          ? <button className="btn btn-claro" onClick={() => setConfirmaBorrar(true)}><IconTrash width={18} height={18} /> Eliminar gym</button>
+          ? <button className="btn btn-claro btn-auto" onClick={() => setConfirmaBorrar(true)}><IconTrash width={18} height={18} /> Eliminar gym</button>
           : <>
               <button className="btn btn-peligro" disabled={ocupado} onClick={eliminar}>Sí, eliminar «{gym.nombre}»</button>
               <button className="btn btn-claro" onClick={() => setConfirmaBorrar(false)}>No, volver</button>

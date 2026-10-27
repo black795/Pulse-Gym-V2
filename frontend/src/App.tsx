@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
+import { IconCamera, IconDumbbell, IconShield } from './components/Icons';
+import { Logo } from './components/UI';
 import { AuthProvider } from './features/auth/AuthContext';
 import { RequiereSesion, SoloInvitados } from './features/auth/guards';
 import AppShell from './layouts/AppShell';
@@ -46,7 +48,32 @@ export default function App() {
   );
 }
 
-/** Las pantallas sin barra inferior también se ven como celular centrado en el computador. */
+const PUNTOS = [
+  { i: IconShield, t: 'Se adapta a tus lesiones', d: 'Si algo te duele, evitamos lo que lo empeora y buscamos reemplazos seguros.' },
+  { i: IconCamera, t: 'Reconoce las máquinas con IA', d: 'Toma una foto y la IA identifica la máquina para armar tu inventario.' },
+  { i: IconDumbbell, t: 'Rutina hecha para tu gimnasio', d: 'Cada sesión usa solo las máquinas que realmente tiene el lugar donde entrenas.' },
+];
+
+/**
+ * Pantallas sin barra inferior (entrar, registro, onboarding…). En el celular se ven igual que siempre;
+ * desde 900px se muestran en pantalla dividida con el panel de marca a la izquierda.
+ */
 function Frame({ children }: { children: React.ReactNode }) {
-  return <div className="app-frame">{children}</div>;
+  return (
+    <div className="auth-split">
+      <aside className="auth-marca" aria-hidden="true">
+        <Logo tamano={42} />
+        <div className="stack" style={{ gap: 16 }}>
+          <h2>Tu entrenador con IA, <em>hecho a tu medida.</em></h2>
+          <p className="muted" style={{ fontSize: 15.5, maxWidth: 440 }}>Un plan semanal que entiende tu objetivo, tu cuerpo y el gym donde entrenas.</p>
+        </div>
+        <ul>
+          {PUNTOS.map(({ i: Icono, t, d }) => (
+            <li key={t}><span><Icono width={20} height={20} /></span><span><b>{t}</b><p>{d}</p></span></li>
+          ))}
+        </ul>
+      </aside>
+      <div className="auth-panel"><div className="app-frame auth-contenido">{children}</div></div>
+    </div>
+  );
 }

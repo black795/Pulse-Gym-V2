@@ -177,7 +177,7 @@ export default function AgregarMaquinas() {
       {error && <Aviso>{error}</Aviso>}
       {aviso && <Aviso tipo="ok">{aviso}</Aviso>}
 
-      <div className="grid-2">
+      <div className="grid-2 acciones">
         <button className="btn btn-neon" style={{ minHeight: 64 }} onClick={() => { setTomadas(0); setCamara(true); }}><IconCamera width={20} height={20} /> Tomar fotos</button>
         <button className="btn btn-claro" style={{ minHeight: 64 }} onClick={() => galeria.current?.click()}><IconImage width={20} height={20} /> Galería</button>
       </div>
@@ -190,13 +190,15 @@ export default function AgregarMaquinas() {
             <h2 style={{ fontSize: 16 }}>Tus fotos</h2>
             <span className="muted" style={{ fontSize: 13 }}>{listas} de {items.length} listas{enEspera ? ` · ${enEspera} en espera` : ''}</span>
           </div>
-          {items.map(i => (
-            <FilaFoto key={i.clave} item={i}
-              onRevisar={() => setRevisando({ clave: i.clave, manual: false })}
-              onManual={() => setRevisando({ clave: i.clave, manual: true })}
-              onReintentar={() => (i.foto ? void reconocer(i.clave, i.foto) : actualizar(i.clave, { estado: 'pendiente' }))}
-              onQuitar={() => { void colaFotos.quitar(i.clave); URL.revokeObjectURL(i.vista); setItems(l => l.filter(x => x.clave !== i.clave)); }} />
-          ))}
+          <div className="grilla-tarjetas">
+            {items.map(i => (
+              <FilaFoto key={i.clave} item={i}
+                onRevisar={() => setRevisando({ clave: i.clave, manual: false })}
+                onManual={() => setRevisando({ clave: i.clave, manual: true })}
+                onReintentar={() => (i.foto ? void reconocer(i.clave, i.foto) : actualizar(i.clave, { estado: 'pendiente' }))}
+                onQuitar={() => { void colaFotos.quitar(i.clave); URL.revokeObjectURL(i.vista); setItems(l => l.filter(x => x.clave !== i.clave)); }} />
+            ))}
+          </div>
         </section>
       )}
 
@@ -206,7 +208,7 @@ export default function AgregarMaquinas() {
         </p>
       )}
 
-      {listas > 0 && <Link to={`/gyms/${gymId}`} className="btn btn-claro">Ver mi inventario</Link>}
+      {listas > 0 && <Link to={`/gyms/${gymId}`} className="btn btn-claro btn-auto">Ver mi inventario</Link>}
 
       {camara && (
         <Camara tomadas={tomadas}

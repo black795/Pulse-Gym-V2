@@ -141,7 +141,7 @@ export default function Inicio() {
           <p className="muted" style={{ fontSize: 14 }}>
             Descansar también es parte del plan. Tu próximo día es el {hoy.siguiente_dia.dia_nombre.toLowerCase()}: {hoy.siguiente_dia.enfoque.toLowerCase()}.
           </p>
-          <button className="btn btn-claro" disabled={cargando} onClick={() => adelantar(hoy.siguiente_dia!.dia)}>
+          <button className="btn btn-claro btn-auto" disabled={cargando} onClick={() => adelantar(hoy.siguiente_dia!.dia)}>
             Adelantar el {hoy.siguiente_dia.dia_nombre.toLowerCase()}
           </button>
         </section>
@@ -172,9 +172,9 @@ export default function Inicio() {
         <>
           {sesion.avisos.map(a => <Aviso key={a} tipo="info">{a}</Aviso>)}
           {sesion.sugerir_fotos && sesion.gym_id && (
-            <Link to={`/gyms/${sesion.gym_id}/agregar`} className="btn btn-claro"><IconCamera width={18} height={18} /> Tomar fotos de las máquinas</Link>
+            <Link to={`/gyms/${sesion.gym_id}/agregar`} className="btn btn-claro btn-auto"><IconCamera width={18} height={18} /> Tomar fotos de las máquinas</Link>
           )}
-          <div className="stack" style={{ gap: 10 }}>
+          <div className="grilla-ejercicios">
             {sesion.ejercicios.map(e => (
               <article key={e.orden} className="card ejercicio" style={e.cambio ? { borderColor: 'var(--warning-tint)' } : undefined}>
                 <span className="ejercicio-orden">{e.orden}</span>
