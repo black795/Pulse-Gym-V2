@@ -1,0 +1,16 @@
+# Opcional: una base PostgreSQL para probar como en producción.
+#   docker compose up -d
+# y en backend/.env:
+#   DATABASE_URL=postgresql+psycopg://pulse:pulse@localhost:5432/pulse_gym
+# Si no quieres instalar nada, deja el SQLite por defecto: funciona igual para desarrollar.
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: pulse
+      POSTGRES_PASSWORD: pulse
+      POSTGRES_DB: pulse_gym
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+volumes:
+  pgdata:

@@ -1,0 +1,38 @@
+[
+  {
+    "codigo": "hombro",
+    "nombre": "Hombro"
+  },
+  {
+    "codigo": "codo",
+    "nombre": "Codo"
+  },
+  {
+    "codigo": "muneca",
+    "nombre": "Muñeca"
+  },
+  {
+    "codigo": "cuello",
+    "nombre": "Cuello"
+  },
+  {
+    "codigo": "espalda_alta",
+    "nombre": "Espalda alta"
+  },
+  {
+    "codigo": "espalda_baja",
+    "nombre": "Espalda baja"
+  },
+  {
+    "codigo": "cadera",
+    "nombre": "Cadera"
+  },
+  {
+    "codigo": "rodilla",
+    "nombre": "Rodilla"
+  },
+  {
+    "codigo": "tobillo",
+    "nombre": "Tobillo"
+  }
+]

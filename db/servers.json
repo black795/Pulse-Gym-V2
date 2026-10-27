@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Pulse Gym v2 (PostgreSQL 16)",
+      "Group": "Servers",
+      "Host": "localhost",
+      "Port": 5432,
+      "MaintenanceDB": "pulse_gym",
+      "Username": "pulse",
+      "SSLMode": "prefer",
+      "PassFile": "C:/Users/Windows 11 Pro/AppData/Roaming/postgresql/pgpass.conf"
+    }
+  }
+}

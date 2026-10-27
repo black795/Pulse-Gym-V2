@@ -1,0 +1,46 @@
+[
+  {
+    "codigo": "pecho",
+    "nombre": "Pecho"
+  },
+  {
+    "codigo": "espalda",
+    "nombre": "Espalda"
+  },
+  {
+    "codigo": "hombros",
+    "nombre": "Hombros"
+  },
+  {
+    "codigo": "biceps",
+    "nombre": "Bíceps"
+  },
+  {
+    "codigo": "triceps",
+    "nombre": "Tríceps"
+  },
+  {
+    "codigo": "cuadriceps",
+    "nombre": "Cuádriceps"
+  },
+  {
+    "codigo": "isquiotibiales",
+    "nombre": "Isquiotibiales"
+  },
+  {
+    "codigo": "gluteos",
+    "nombre": "Glúteos y cadera"
+  },
+  {
+    "codigo": "pantorrillas",
+    "nombre": "Pantorrillas"
+  },
+  {
+    "codigo": "core",
+    "nombre": "Core y abdomen"
+  },
+  {
+    "codigo": "cardio",
+    "nombre": "Cardio"
+  }
+]

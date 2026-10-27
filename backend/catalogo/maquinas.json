@@ -1,0 +1,667 @@
+[
+  {
+    "codigo": "PRENSA_45",
+    "nombre": "Prensa de piernas 45°",
+    "otros_nombres": [
+      "Leg press",
+      "Prensa inclinada",
+      "Prensa"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "PRENSA_HORIZONTAL",
+    "nombre": "Prensa de piernas horizontal",
+    "otros_nombres": [
+      "Leg press sentado",
+      "Prensa sentada"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "EXT_CUADRICEPS",
+    "nombre": "Extensión de cuádriceps",
+    "otros_nombres": [
+      "Silla extensora",
+      "Leg extension",
+      "Extensiones"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Extensions/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "CURL_FEMORAL_SENTADO",
+    "nombre": "Curl femoral sentado",
+    "otros_nombres": [
+      "Isquios sentado",
+      "Leg curl sentado"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "CURL_FEMORAL_TUMBADO",
+    "nombre": "Curl femoral tumbado",
+    "otros_nombres": [
+      "Camilla de isquios",
+      "Leg curl",
+      "Isquios acostado"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Lying_Leg_Curls/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "ADUCTORES",
+    "nombre": "Máquina de aductores",
+    "otros_nombres": [
+      "Cierre de piernas",
+      "Aductor",
+      "Contractora de piernas"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Adductor/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Adductor/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "ABDUCTORES",
+    "nombre": "Máquina de abductores",
+    "otros_nombres": [
+      "Apertura de piernas",
+      "Abductor",
+      "Abridora"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Abductor/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Abductor/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "HACK_SQUAT",
+    "nombre": "Hack squat",
+    "otros_nombres": [
+      "Sentadilla hack",
+      "Hack"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hack_Squat/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hack_Squat/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "SMITH",
+    "nombre": "Máquina Smith",
+    "otros_nombres": [
+      "Multipower",
+      "Smith",
+      "Barra guiada"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Squat/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Smith_Machine_Squat/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "GEMELOS_SENTADO",
+    "nombre": "Gemelos sentado",
+    "otros_nombres": [
+      "Calf sentado",
+      "Pantorrilla sentado"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Calf_Raise/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Calf_Raise/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "GEMELOS_PARADO",
+    "nombre": "Gemelos de pie",
+    "otros_nombres": [
+      "Calf de pie",
+      "Pantorrilla de pie"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Standing_Calf_Raises/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "PRESS_PECHO_MAQ",
+    "nombre": "Press de pecho en máquina",
+    "otros_nombres": [
+      "Chest press",
+      "Press pecho sentado",
+      "Press de pecho"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bench_Press/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bench_Press/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "PRESS_INCLINADO_MAQ",
+    "nombre": "Press inclinado en máquina",
+    "otros_nombres": [
+      "Press inclinado sentado"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Incline_Chest_Press/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Incline_Chest_Press/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "PEC_DECK",
+    "nombre": "Contractora de pecho",
+    "otros_nombres": [
+      "Pec deck",
+      "Aperturas en máquina",
+      "Mariposa"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butterfly/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Butterfly/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "JALON_DORSAL",
+    "nombre": "Jalón al pecho",
+    "otros_nombres": [
+      "Polea alta",
+      "Lat pulldown",
+      "Jalón dorsal",
+      "Dorsalera"
+    ],
+    "tipo": "polea",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Wide-Grip_Lat_Pulldown/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "REMO_POLEA_BAJA",
+    "nombre": "Remo en polea baja",
+    "otros_nombres": [
+      "Remo sentado",
+      "Polea baja",
+      "Remo con cable"
+    ],
+    "tipo": "polea",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Cable_Rows/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "REMO_MAQUINA",
+    "nombre": "Remo en máquina",
+    "otros_nombres": [
+      "Remo con apoyo de pecho",
+      "Remo sentado en máquina"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Iso_Row/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Iso_Row/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "POLEA_DOBLE",
+    "nombre": "Polea doble (cruce de poleas)",
+    "otros_nombres": [
+      "Crossover",
+      "Cruce de poleas",
+      "Torre de poleas",
+      "Poleas"
+    ],
+    "tipo": "polea",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Cable_Crossover/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "PRESS_HOMBRO_MAQ",
+    "nombre": "Press de hombros en máquina",
+    "otros_nombres": [
+      "Shoulder press",
+      "Press militar en máquina"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Shoulder_Press/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leverage_Shoulder_Press/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "ELEV_LATERAL_MAQ",
+    "nombre": "Elevaciones laterales en máquina",
+    "otros_nombres": [
+      "Vuelos laterales en máquina"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Side_Lateral_Raise/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Side_Lateral_Raise/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "DELT_POSTERIOR",
+    "nombre": "Deltoides posterior",
+    "otros_nombres": [
+      "Pec deck inverso",
+      "Aperturas posteriores",
+      "Contractora inversa"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Machine_Flyes/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Reverse_Machine_Flyes/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "CURL_BICEPS_MAQ",
+    "nombre": "Curl de bíceps en máquina",
+    "otros_nombres": [
+      "Bíceps en máquina",
+      "Curl sentado en máquina"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bicep_Curl/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Bicep_Curl/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "EXT_TRICEPS_MAQ",
+    "nombre": "Extensión de tríceps en máquina",
+    "otros_nombres": [
+      "Tríceps en máquina",
+      "Fondos en máquina"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Triceps_Extension/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Machine_Triceps_Extension/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "ABDOMINAL_MAQ",
+    "nombre": "Máquina de abdominales",
+    "otros_nombres": [
+      "Crunch en máquina",
+      "Abdominales en máquina"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Ab_Crunch_Machine/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "GLUTE_KICKBACK_MAQ",
+    "nombre": "Patada de glúteo en máquina",
+    "otros_nombres": [
+      "Glute kickback",
+      "Patada de glúteo"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Glute_Kickback/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Glute_Kickback/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "BANCO_ROMANO",
+    "nombre": "Banco romano",
+    "otros_nombres": [
+      "Hiperextensiones",
+      "Banco lumbar",
+      "Silla romana"
+    ],
+    "tipo": "estructura",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "DOMINADAS_ASISTIDAS",
+    "nombre": "Máquina de dominadas asistidas",
+    "otros_nombres": [
+      "Gravitron",
+      "Dominadas asistidas"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Assisted_Pull-Up/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Band_Assisted_Pull-Up/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "MANCUERNAS",
+    "nombre": "Mancuernas",
+    "otros_nombres": [
+      "Pesas",
+      "Mancuernas ajustables",
+      "Pesas de mano"
+    ],
+    "tipo": "peso_libre",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "BARRA_OLIMPICA",
+    "nombre": "Barra olímpica con discos",
+    "otros_nombres": [
+      "Barra libre",
+      "Barra",
+      "Barra con discos"
+    ],
+    "tipo": "peso_libre",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Full_Squat/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "BARRA_Z",
+    "nombre": "Barra Z",
+    "otros_nombres": [
+      "Barra curl",
+      "Barra EZ"
+    ],
+    "tipo": "peso_libre",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Curl/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/EZ-Bar_Curl/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "KETTLEBELL",
+    "nombre": "Kettlebell",
+    "otros_nombres": [
+      "Pesa rusa",
+      "Pesa rusa (kettlebell)"
+    ],
+    "tipo": "peso_libre",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Swings/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Kettlebell_Swings/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "BANCO_PLANO",
+    "nombre": "Banco plano",
+    "otros_nombres": [
+      "Banco",
+      "Banco de pecho"
+    ],
+    "tipo": "estructura",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Bench_Press/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "BANCO_INCLINADO",
+    "nombre": "Banco inclinado regulable",
+    "otros_nombres": [
+      "Banco regulable",
+      "Banco inclinado"
+    ],
+    "tipo": "estructura",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Press/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Incline_Dumbbell_Press/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "PREDICADOR",
+    "nombre": "Banco predicador",
+    "otros_nombres": [
+      "Banco Scott",
+      "Predicador",
+      "Scott"
+    ],
+    "tipo": "estructura",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Preacher_Curl/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Preacher_Curl/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "RACK_SENTADILLA",
+    "nombre": "Rack de sentadilla",
+    "otros_nombres": [
+      "Jaula",
+      "Rack",
+      "Power rack"
+    ],
+    "tipo": "estructura",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Squat/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Squat/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "BARRA_DOMINADAS",
+    "nombre": "Barra de dominadas",
+    "otros_nombres": [
+      "Barra fija",
+      "Dominadas"
+    ],
+    "tipo": "estructura",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Pullups/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "PARALELAS_FONDOS",
+    "nombre": "Paralelas para fondos",
+    "otros_nombres": [
+      "Fondos en paralelas",
+      "Barras paralelas"
+    ],
+    "tipo": "estructura",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Triceps_Version/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dips_-_Triceps_Version/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "BANCO_ABDOMINAL",
+    "nombre": "Banco abdominal declinado",
+    "otros_nombres": [
+      "Banco declinado",
+      "Banco de abdominales"
+    ],
+    "tipo": "estructura",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Crunch/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Decline_Crunch/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "CINTA_CORRER",
+    "nombre": "Cinta de correr",
+    "otros_nombres": [
+      "Caminadora",
+      "Trotadora",
+      "Treadmill"
+    ],
+    "tipo": "cardio",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Running_Treadmill/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Running_Treadmill/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "BICICLETA_ESTATICA",
+    "nombre": "Bicicleta estática",
+    "otros_nombres": [
+      "Bici fija",
+      "Spinning",
+      "Bicicleta fija"
+    ],
+    "tipo": "cardio",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bicycling_Stationary/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bicycling_Stationary/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "ELIPTICA",
+    "nombre": "Elíptica",
+    "otros_nombres": [
+      "Elíptico",
+      "Transport"
+    ],
+    "tipo": "cardio",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elliptical_Trainer/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Elliptical_Trainer/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "REMO_ERGOMETRO",
+    "nombre": "Remo ergómetro",
+    "otros_nombres": [
+      "Remadora",
+      "Máquina de remo"
+    ],
+    "tipo": "cardio",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rowing_Stationary/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Rowing_Stationary/1.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "PENDULO",
+    "nombre": "Sentadilla en péndulo",
+    "otros_nombres": [
+      "Péndulo",
+      "Pendulum squat",
+      "Sentadilla péndulo",
+      "Pendulum"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "HIP_THRUST_MAQ",
+    "nombre": "Máquina de hip thrust",
+    "otros_nombres": [
+      "Booty builder",
+      "Glute drive",
+      "Empuje de cadera en máquina",
+      "Hip thrust machine"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Barbell_Hip_Thrust/0.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "BELT_SQUAT",
+    "nombre": "Sentadilla con cinturón",
+    "otros_nombres": [
+      "Belt squat",
+      "Sentadilla de cinturón",
+      "Belt squat machine"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg"
+    ],
+    "activa": true
+  },
+  {
+    "codigo": "REMO_PECHO_APOYADO",
+    "nombre": "Remo con apoyo en el pecho",
+    "otros_nombres": [
+      "Chest supported row",
+      "Remo T con apoyo",
+      "Remo apoyo esternal"
+    ],
+    "tipo": "maquina_guiada",
+    "fotos": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/T-Bar_Row/0.jpg"
+    ],
+    "activa": true
+  }
+]

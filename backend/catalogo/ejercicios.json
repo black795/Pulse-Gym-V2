@@ -1,0 +1,2538 @@
+[
+  {
+    "codigo": "PRESS_PECHO_MAQ",
+    "nombre": "Press de pecho en máquina",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "triceps",
+      "hombros"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "PRESS_PECHO_MAQ"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Siéntate con la espalda apoyada y las manijas a la altura del pecho. Empuja hacia delante sin bloquear los codos y regresa lento.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PRESS_INCLINADO_MAQ",
+    "nombre": "Press inclinado en máquina",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "hombros",
+      "triceps"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "PRESS_INCLINADO_MAQ"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Ajusta el asiento para que las manijas queden a la altura del pecho alto. Empuja hacia arriba y delante, controlando el regreso.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "APERTURAS_PEC_DECK",
+    "nombre": "Aperturas en contractora de pecho",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "hombros"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "PEC_DECK"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con los codos ligeramente flexionados, junta los brazos frente al pecho apretando el pecho y regresa despacio sin estirar de más el hombro.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CRUCE_POLEAS",
+    "nombre": "Cruce de poleas",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "hombros"
+    ],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "POLEA_DOBLE"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De pie entre las poleas altas, lleva las manos hacia delante y abajo hasta juntarlas. Mantén el pecho abierto y el torso firme.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PRESS_BANCA_BARRA",
+    "nombre": "Press de banca con barra",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "triceps",
+      "hombros"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BARRA_OLIMPICA",
+      "BANCO_PLANO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Acostado en el banco, baja la barra al pecho con control y empuja hasta extender los brazos. Pide ayuda con cargas altas.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PRESS_BANCA_MANCUERNAS",
+    "nombre": "Press de banca con mancuernas",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "triceps",
+      "hombros"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS",
+      "BANCO_PLANO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Acostado, baja las mancuernas a los lados del pecho y empuja hacia arriba juntándolas sin chocarlas.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "APERTURAS_MANCUERNAS",
+    "nombre": "Aperturas con mancuernas",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "hombros"
+    ],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS",
+      "BANCO_PLANO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Acostado, abre los brazos en arco con los codos algo flexionados hasta sentir estiramiento en el pecho y vuelve a juntar.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "FONDOS_PARALELAS_PECHO",
+    "nombre": "Fondos en paralelas (pecho)",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "triceps",
+      "hombros"
+    ],
+    "dificultad": "dificil",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "PARALELAS_FONDOS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "evitar"
+      },
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sostén tu peso en las paralelas, inclina el torso al frente y baja hasta que el codo llegue a 90°. Sube empujando con el pecho.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "FLEXIONES",
+    "nombre": "Flexiones de brazos",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "triceps",
+      "hombros",
+      "core"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Manos bajo los hombros y cuerpo en línea recta. Baja el pecho al piso y empuja de regreso sin hundir la cadera.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "FLEXIONES_RODILLAS",
+    "nombre": "Flexiones con rodillas apoyadas",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "triceps",
+      "hombros"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Igual que la flexión normal pero con las rodillas en el piso. Mantén la línea desde las rodillas hasta la cabeza.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "FLEXIONES_INCLINADAS",
+    "nombre": "Flexiones inclinadas (manos en pared o mesa)",
+    "musculo_principal": "pecho",
+    "musculos_secundarios": [
+      "triceps",
+      "hombros"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoya las manos en una pared o mesa firme, cuerpo recto, y flexiona los codos acercando el pecho al apoyo.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "JALON_PECHO",
+    "nombre": "Jalón al pecho",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "JALON_DORSAL"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Agarra la barra un poco más ancha que los hombros y llévala hacia la parte alta del pecho juntando los omóplatos. Sube controlando.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "JALON_AGARRE_CERRADO",
+    "nombre": "Jalón con agarre cerrado",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "JALON_DORSAL"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con el agarre cerrado y las palmas hacia ti, jala hasta el pecho llevando los codos hacia abajo y atrás.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "REMO_POLEA_BAJA",
+    "nombre": "Remo en polea baja",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "REMO_POLEA_BAJA"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado con la espalda recta, jala el agarre hacia el abdomen juntando los omóplatos. Estira sin encorvarte.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "REMO_MAQUINA",
+    "nombre": "Remo en máquina con apoyo de pecho",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps",
+      "hombros"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "REMO_MAQUINA"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoya el pecho en el soporte, jala las manijas hacia ti llevando los codos atrás y regresa lento.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "REMO_MANCUERNA_UNA_MANO",
+    "nombre": "Remo con mancuerna a una mano",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS",
+      "BANCO_PLANO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoya una mano y una rodilla en el banco, espalda recta, y sube la mancuerna hacia la cadera. Alterna el lado.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "REMO_BARRA",
+    "nombre": "Remo con barra",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BARRA_OLIMPICA"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "evitar"
+      }
+    ],
+    "instrucciones": "Inclina el torso con la espalda recta y jala la barra hacia el abdomen. No redondees la espalda.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "DOMINADAS",
+    "nombre": "Dominadas",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps",
+      "hombros"
+    ],
+    "dificultad": "dificil",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BARRA_DOMINADAS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Cuélgate con agarre un poco más ancho que los hombros y sube hasta pasar la barbilla. Baja controlado.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "DOMINADAS_ASISTIDAS",
+    "nombre": "Dominadas asistidas en máquina",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "DOMINADAS_ASISTIDAS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Elige un contrapeso que te permita completar las repeticiones. Sube hasta pasar la barbilla y baja lento.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "HIPEREXTENSIONES",
+    "nombre": "Hiperextensiones en banco romano",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "gluteos",
+      "isquiotibiales"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BANCO_ROMANO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con la cadera apoyada, baja el torso y sube hasta quedar en línea recta con las piernas. No arquees de más al final.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "SUPERMAN",
+    "nombre": "Superman en el piso",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "gluteos"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Boca abajo, levanta a la vez brazos y piernas del piso, mantén 2 segundos y baja despacio.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "REMO_INVERTIDO_MESA",
+    "nombre": "Remo invertido bajo una mesa firme",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps",
+      "hombros"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Acuéstate bajo una mesa resistente, agarra el borde y jala el pecho hacia él con el cuerpo recto.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ANGEL_NIEVE_INVERSO",
+    "nombre": "Ángeles de nieve invertidos",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "hombros"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Boca abajo con brazos extendidos, levántalos un poco y llévalos de los lados a la cadera como un abanico.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PRESS_HOMBRO_MAQ",
+    "nombre": "Press de hombros en máquina",
+    "musculo_principal": "hombros",
+    "musculos_secundarios": [
+      "triceps"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "PRESS_HOMBRO_MAQ"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cuello",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado con la espalda apoyada, empuja las manijas hacia arriba sin encoger los hombros y baja con control.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ELEV_LATERAL_MAQ",
+    "nombre": "Elevaciones laterales en máquina",
+    "musculo_principal": "hombros",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "ELEV_LATERAL_MAQ"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con los brazos a los lados, levanta los codos hasta la altura del hombro y baja lento.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "DELT_POSTERIOR_MAQ",
+    "nombre": "Deltoides posterior en máquina",
+    "musculo_principal": "hombros",
+    "musculos_secundarios": [
+      "espalda"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "DELT_POSTERIOR"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Pecho apoyado en el respaldo, abre los brazos hacia atrás juntando los omóplatos y regresa controlado.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PRESS_MILITAR_MANCUERNAS",
+    "nombre": "Press de hombros con mancuernas",
+    "musculo_principal": "hombros",
+    "musculos_secundarios": [
+      "triceps"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS",
+      "BANCO_INCLINADO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cuello",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado con respaldo, empuja las mancuernas desde los hombros hacia arriba hasta casi juntarlas y baja con control.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ELEV_LATERAL_MANCUERNAS",
+    "nombre": "Elevaciones laterales con mancuernas",
+    "musculo_principal": "hombros",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De pie, sube las mancuernas a los lados hasta la altura de los hombros con los codos ligeramente flexionados.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "FACE_PULL",
+    "nombre": "Face pull en polea",
+    "musculo_principal": "hombros",
+    "musculos_secundarios": [
+      "espalda"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "POLEA_DOBLE"
+    ],
+    "contraindicaciones": [],
+    "instrucciones": "Con la polea a la altura del rostro y una cuerda, jala hacia la cara abriendo los codos. Aprieta los omóplatos.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ENCOGIMIENTOS_MANCUERNAS",
+    "nombre": "Encogimientos con mancuernas",
+    "musculo_principal": "hombros",
+    "musculos_secundarios": [
+      "espalda"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "cuello",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De pie con las mancuernas a los lados, sube los hombros hacia las orejas, pausa un segundo y baja.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PIKE_PUSHUP",
+    "nombre": "Flexiones en pica",
+    "musculo_principal": "hombros",
+    "musculos_secundarios": [
+      "triceps",
+      "pecho"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cuello",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con la cadera alta formando una V invertida, flexiona los codos acercando la cabeza al piso y empuja de vuelta.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PLANCHA_TOQUE_HOMBRO",
+    "nombre": "Plancha con toque de hombro",
+    "musculo_principal": "hombros",
+    "musculos_secundarios": [
+      "core"
+    ],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "En posición de plancha alta, toca un hombro con la mano contraria sin balancear la cadera. Alterna.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_BICEPS_MAQ",
+    "nombre": "Curl de bíceps en máquina",
+    "musculo_principal": "biceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "CURL_BICEPS_MAQ"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con los brazos apoyados, flexiona los codos llevando las manijas hacia los hombros y baja lento.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_MANCUERNAS",
+    "nombre": "Curl de bíceps con mancuernas",
+    "musculo_principal": "biceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De pie, sube las mancuernas girando las palmas hacia ti sin balancear el cuerpo y baja controlando.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_MARTILLO",
+    "nombre": "Curl martillo",
+    "musculo_principal": "biceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con las palmas enfrentadas, sube las mancuernas hacia los hombros sin mover los codos.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_BARRA_Z",
+    "nombre": "Curl con barra Z",
+    "musculo_principal": "biceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BARRA_Z"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Agarra la barra Z y sube hacia el pecho manteniendo los codos pegados al cuerpo.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_PREDICADOR",
+    "nombre": "Curl en banco predicador",
+    "musculo_principal": "biceps",
+    "musculos_secundarios": [],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "PREDICADOR",
+      "BARRA_Z"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoya los brazos en el banco, baja la barra casi hasta estirar el codo y sube sin despegar el brazo.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_POLEA",
+    "nombre": "Curl en polea baja",
+    "musculo_principal": "biceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "POLEA_DOBLE"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De pie frente a la polea baja, sube la barra o cuerda hacia el pecho con los codos fijos.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_TOALLA",
+    "nombre": "Curl de bíceps con toalla (autorresistencia)",
+    "musculo_principal": "biceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Pisa una toalla, tira de los extremos hacia arriba mientras tus piernas oponen resistencia. Sube y baja lento.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_MOCHILA",
+    "nombre": "Curl de bíceps con mochila cargada",
+    "musculo_principal": "biceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sostén una mochila con libros por las asas y haz curl hacia el pecho, sin balancearte.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "EXT_TRICEPS_MAQ",
+    "nombre": "Extensión de tríceps en máquina",
+    "musculo_principal": "triceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "EXT_TRICEPS_MAQ"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado, empuja las manijas hacia abajo extendiendo los codos y regresa sin que los codos se separen.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PUSHDOWN_POLEA",
+    "nombre": "Extensión de tríceps en polea",
+    "musculo_principal": "triceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "POLEA_DOBLE"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De pie frente a la polea alta, baja la barra o cuerda extendiendo los codos pegados al cuerpo.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PRESS_FRANCES_MANCUERNA",
+    "nombre": "Press francés con mancuerna",
+    "musculo_principal": "triceps",
+    "musculos_secundarios": [],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS",
+      "BANCO_PLANO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Acostado, sostén una mancuerna sobre la cabeza y baja detrás de ella flexionando solo los codos.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PATADA_TRICEPS",
+    "nombre": "Patada de tríceps con mancuerna",
+    "musculo_principal": "triceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS",
+      "BANCO_PLANO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Inclinado con la espalda recta y el codo pegado al torso, extiende el antebrazo hacia atrás y regresa.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PRESS_CERRADO_BARRA",
+    "nombre": "Press de banca agarre cerrado",
+    "musculo_principal": "triceps",
+    "musculos_secundarios": [
+      "pecho",
+      "hombros"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BARRA_OLIMPICA",
+      "BANCO_PLANO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Agarra la barra con las manos a la anchura de los hombros y baja al pecho con los codos pegados. Empuja hacia arriba.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "FONDOS_SILLA",
+    "nombre": "Fondos de tríceps en silla",
+    "musculo_principal": "triceps",
+    "musculos_secundarios": [
+      "hombros"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con las manos en el borde de una silla firme y los pies al frente, baja flexionando los codos y empuja para subir.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "FLEXIONES_DIAMANTE",
+    "nombre": "Flexiones diamante",
+    "musculo_principal": "triceps",
+    "musculos_secundarios": [
+      "pecho",
+      "hombros"
+    ],
+    "dificultad": "dificil",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Forma un rombo con las manos bajo el pecho, baja con los codos pegados al cuerpo y empuja de regreso.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PRENSA_45",
+    "nombre": "Prensa de piernas 45°",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos",
+      "isquiotibiales"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "PRENSA_45"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Espalda y cadera pegadas al respaldo, empuja la plataforma sin bloquear las rodillas y baja hasta unos 90°.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PRENSA_HORIZONTAL",
+    "nombre": "Prensa de piernas horizontal",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos",
+      "isquiotibiales"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "PRENSA_HORIZONTAL"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Siéntate con la espalda apoyada y empuja la plataforma hacia delante extendiendo las piernas sin bloquear las rodillas.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "EXT_CUADRICEPS",
+    "nombre": "Extensión de cuádriceps",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "EXT_CUADRICEPS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "evitar"
+      }
+    ],
+    "instrucciones": "Sentado, sube las piernas extendiendo las rodillas hasta casi estirarlas y baja lento. Evítalo si hay dolor de rodilla.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "HACK_SQUAT",
+    "nombre": "Sentadilla hack",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "HACK_SQUAT"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con la espalda apoyada en el respaldo inclinado, baja flexionando las rodillas y sube empujando con todo el pie.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "SENTADILLA_SMITH",
+    "nombre": "Sentadilla en máquina Smith",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos",
+      "isquiotibiales"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "SMITH"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con la barra guiada sobre los hombros, baja con la espalda recta hasta donde tu movilidad lo permita y sube.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "SENTADILLA_BARRA",
+    "nombre": "Sentadilla con barra",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos",
+      "isquiotibiales",
+      "core"
+    ],
+    "dificultad": "dificil",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "RACK_SENTADILLA",
+      "BARRA_OLIMPICA"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "evitar"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Barra sobre la espalda alta, baja con el pecho arriba y las rodillas siguiendo la línea de los pies. Sube empujando el piso.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "SENTADILLA_GOBLET",
+    "nombre": "Sentadilla goblet con kettlebell",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos",
+      "core"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "KETTLEBELL"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sostén la pesa contra el pecho, baja entre las rodillas con la espalda recta y sube empujando con los talones.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ZANCADAS_MANCUERNAS",
+    "nombre": "Zancadas con mancuernas",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos",
+      "isquiotibiales"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Da un paso largo al frente, baja hasta que ambas rodillas formen unos 90° y vuelve al inicio. Alterna las piernas.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "SENTADILLA_PESO_CORPORAL",
+    "nombre": "Sentadilla con peso corporal",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos",
+      "isquiotibiales"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Pies al ancho de los hombros, baja como si te sentaras en una silla con el pecho arriba y sube empujando el piso.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ZANCADAS_PESO_CORPORAL",
+    "nombre": "Zancadas con peso corporal",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos",
+      "isquiotibiales"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Da un paso largo al frente, baja la rodilla de atrás hacia el piso y vuelve. Alterna las piernas.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "SENTADILLA_BULGARA",
+    "nombre": "Sentadilla búlgara con peso corporal",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoya un pie atrás sobre una silla o banco, baja con la pierna delantera y sube. Cambia de pierna.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_FEMORAL_SENTADO",
+    "nombre": "Curl femoral sentado",
+    "musculo_principal": "isquiotibiales",
+    "musculos_secundarios": [
+      "pantorrillas"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "CURL_FEMORAL_SENTADO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado, flexiona las rodillas llevando los talones hacia atrás y abajo, y regresa con control.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_FEMORAL_TUMBADO",
+    "nombre": "Curl femoral tumbado",
+    "musculo_principal": "isquiotibiales",
+    "musculos_secundarios": [
+      "pantorrillas"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "CURL_FEMORAL_TUMBADO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Boca abajo, flexiona las rodillas llevando los talones hacia los glúteos y baja lento sin despegar la cadera.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PESO_MUERTO_RUMANO_BARRA",
+    "nombre": "Peso muerto rumano con barra",
+    "musculo_principal": "isquiotibiales",
+    "musculos_secundarios": [
+      "gluteos",
+      "espalda"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BARRA_OLIMPICA"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "evitar"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con la barra cerca del cuerpo, lleva la cadera atrás con rodillas casi rectas y espalda neutra. Sube apretando glúteos.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PESO_MUERTO_RUMANO_MANCUERNAS",
+    "nombre": "Peso muerto rumano con mancuernas",
+    "musculo_principal": "isquiotibiales",
+    "musculos_secundarios": [
+      "gluteos",
+      "espalda"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "MANCUERNAS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Mancuernas frente a los muslos, lleva la cadera atrás bajándolas por las piernas y sube con la espalda recta.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PESO_MUERTO_CONVENCIONAL",
+    "nombre": "Peso muerto convencional",
+    "musculo_principal": "isquiotibiales",
+    "musculos_secundarios": [
+      "gluteos",
+      "espalda",
+      "core"
+    ],
+    "dificultad": "dificil",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BARRA_OLIMPICA"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "evitar"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con la barra sobre los pies, espalda neutra y pecho arriba, empuja el piso y extiende cadera y rodillas a la vez.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "BUENOS_DIAS_PESO_CORPORAL",
+    "nombre": "Buenos días sin peso",
+    "musculo_principal": "isquiotibiales",
+    "musculos_secundarios": [
+      "gluteos",
+      "espalda"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Manos tras la cabeza, lleva la cadera atrás con la espalda recta hasta sentir estirar la parte trasera del muslo y vuelve.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PESO_MUERTO_UNA_PIERNA",
+    "nombre": "Peso muerto a una pierna sin peso",
+    "musculo_principal": "isquiotibiales",
+    "musculos_secundarios": [
+      "gluteos",
+      "core"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoyado en una pierna, inclina el torso llevando la otra hacia atrás y vuelve a la posición erguida.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CURL_FEMORAL_TOALLA",
+    "nombre": "Curl femoral deslizante con toalla",
+    "musculo_principal": "isquiotibiales",
+    "musculos_secundarios": [
+      "gluteos"
+    ],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Boca arriba con los talones sobre una toalla en piso liso, eleva la cadera y desliza los talones acercándolos a los glúteos.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PATADA_GLUTEO_MAQ",
+    "nombre": "Patada de glúteo en máquina",
+    "musculo_principal": "gluteos",
+    "musculos_secundarios": [
+      "isquiotibiales"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "GLUTE_KICKBACK_MAQ"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoya el pecho, empuja la plataforma hacia atrás con una pierna apretando el glúteo y regresa controlado.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ABDUCTORES_MAQ",
+    "nombre": "Abducción de cadera en máquina",
+    "musculo_principal": "gluteos",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "ABDUCTORES"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado con la espalda apoyada, abre las piernas contra las almohadillas y cierra despacio.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ADUCTORES_MAQ",
+    "nombre": "Aducción de cadera en máquina",
+    "musculo_principal": "gluteos",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "ADUCTORES"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado, junta las piernas contra las almohadillas sin impulso y regresa lento.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "HIP_THRUST_BARRA",
+    "nombre": "Hip thrust con barra",
+    "musculo_principal": "gluteos",
+    "musculos_secundarios": [
+      "isquiotibiales",
+      "core"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BARRA_OLIMPICA",
+      "BANCO_PLANO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con la espalda alta en el banco y la barra sobre la cadera, empuja hacia arriba hasta alinear rodillas, cadera y hombros.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "SENTADILLA_SUMO_KETTLEBELL",
+    "nombre": "Sentadilla sumo con kettlebell",
+    "musculo_principal": "gluteos",
+    "musculos_secundarios": [
+      "cuadriceps"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "KETTLEBELL"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Pies más abiertos que los hombros y puntas afuera, sostén la pesa al centro, baja y sube apretando los glúteos.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PUENTE_GLUTEOS",
+    "nombre": "Puente de glúteos",
+    "musculo_principal": "gluteos",
+    "musculos_secundarios": [
+      "isquiotibiales"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Boca arriba con rodillas flexionadas, eleva la cadera apretando los glúteos y baja sin tocar del todo el piso.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PUENTE_UNA_PIERNA",
+    "nombre": "Puente de glúteos a una pierna",
+    "musculo_principal": "gluteos",
+    "musculos_secundarios": [
+      "isquiotibiales",
+      "core"
+    ],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Igual que el puente, pero con una pierna estirada al aire. Mantén la cadera nivelada y cambia de pierna.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PATADA_CUADRUPEDIA",
+    "nombre": "Patada de glúteo en cuatro apoyos",
+    "musculo_principal": "gluteos",
+    "musculos_secundarios": [
+      "isquiotibiales"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "A cuatro apoyos, lleva una pierna hacia atrás y arriba con la rodilla flexionada sin arquear la espalda.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "GEMELOS_DE_PIE_MAQ",
+    "nombre": "Gemelos de pie en máquina",
+    "musculo_principal": "pantorrillas",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "GEMELOS_PARADO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con los hombros bajo las almohadillas, sube sobre las puntas de los pies al máximo y baja estirando.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "GEMELOS_SENTADO_MAQ",
+    "nombre": "Gemelos sentado en máquina",
+    "musculo_principal": "pantorrillas",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "GEMELOS_SENTADO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado con las rodillas bajo el soporte, sube los talones al máximo y baja despacio.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "GEMELOS_EN_PRENSA",
+    "nombre": "Gemelos en prensa de piernas",
+    "musculo_principal": "pantorrillas",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "PRENSA_45"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con las piernas casi extendidas, empuja la plataforma solo con las puntas de los pies y regresa estirando.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ELEV_TALONES_PESO_CORPORAL",
+    "nombre": "Elevación de talones de pie",
+    "musculo_principal": "pantorrillas",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De pie, sube sobre las puntas de los pies, pausa arriba y baja lento. Apóyate de una pared si lo necesitas.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ELEV_TALONES_ESCALON",
+    "nombre": "Elevación de talones en escalón",
+    "musculo_principal": "pantorrillas",
+    "musculos_secundarios": [],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con las puntas en el borde de un escalón, baja los talones por debajo y sube lo más alto posible.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ABDOMINAL_MAQ",
+    "nombre": "Crunch en máquina de abdominales",
+    "musculo_principal": "core",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "ABDOMINAL_MAQ"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "cuello",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado, flexiona el tronco hacia delante acercando el pecho a la cadera y regresa sin soltar la carga de golpe.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CRUNCH_POLEA",
+    "nombre": "Crunch en polea alta",
+    "musculo_principal": "core",
+    "musculos_secundarios": [],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "POLEA_DOBLE"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "cuello",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De rodillas frente a la polea, con la cuerda junto a la cabeza, flexiona el tronco llevando los codos hacia las rodillas.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ELEV_PIERNAS_COLGADO",
+    "nombre": "Elevación de piernas colgado",
+    "musculo_principal": "core",
+    "musculos_secundarios": [],
+    "dificultad": "dificil",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BARRA_DOMINADAS"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Cuelga de la barra y sube las piernas flexionando la cadera sin balancearte. Baja con control.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CRUNCH_BANCO_DECLINADO",
+    "nombre": "Crunch en banco declinado",
+    "musculo_principal": "core",
+    "musculos_secundarios": [],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "BANCO_ABDOMINAL"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "cuello",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Con los pies asegurados, sube el tronco enrollando la columna hacia las rodillas y baja lento.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "GIRO_RUSO_KETTLEBELL",
+    "nombre": "Giro ruso con kettlebell",
+    "musculo_principal": "core",
+    "musculos_secundarios": [],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "peso_libre",
+    "maquinas": [
+      "KETTLEBELL"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Sentado con el torso inclinado atrás y las piernas elevadas, gira el torso llevando la pesa de lado a lado.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PLANCHA",
+    "nombre": "Plancha sobre antebrazos",
+    "musculo_principal": "core",
+    "musculos_secundarios": [
+      "hombros"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoya antebrazos y puntas de los pies, cuerpo recto de la cabeza a los talones. Respira y mantén el tiempo indicado.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "PLANCHA_LATERAL",
+    "nombre": "Plancha lateral",
+    "musculo_principal": "core",
+    "musculos_secundarios": [
+      "hombros"
+    ],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De lado apoyado en un antebrazo, eleva la cadera para alinear el cuerpo y mantén. Repite del otro lado.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CRUNCH_SUELO",
+    "nombre": "Crunch en el piso",
+    "musculo_principal": "core",
+    "musculos_secundarios": [],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "cuello",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Boca arriba con rodillas flexionadas, despega los hombros del piso contrayendo el abdomen sin tirar del cuello.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "BICICLETA_ABDOMINAL",
+    "nombre": "Bicicleta abdominal",
+    "musculo_principal": "core",
+    "musculos_secundarios": [],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "cuello",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Boca arriba, lleva el codo hacia la rodilla contraria alternando lados con movimiento controlado.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "BIRD_DOG",
+    "nombre": "Bird dog",
+    "musculo_principal": "core",
+    "musculos_secundarios": [
+      "espalda",
+      "gluteos"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "A cuatro apoyos, estira un brazo y la pierna contraria manteniendo la espalda quieta. Alterna.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ESCALADORES",
+    "nombre": "Escaladores (mountain climbers)",
+    "musculo_principal": "core",
+    "musculos_secundarios": [
+      "hombros",
+      "cardio"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "En plancha alta, lleva las rodillas al pecho alternando a buen ritmo sin subir la cadera.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ELEV_PIERNAS_TUMBADO",
+    "nombre": "Elevación de piernas tumbado",
+    "musculo_principal": "core",
+    "musculos_secundarios": [],
+    "dificultad": "media",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Boca arriba con las manos bajo la cadera, sube las piernas casi rectas hasta vertical y baja sin tocar el piso.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CAMINATA_CINTA",
+    "nombre": "Caminata inclinada en cinta",
+    "musculo_principal": "cardio",
+    "musculos_secundarios": [
+      "gluteos",
+      "pantorrillas"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "CINTA_CORRER"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Camina a ritmo constante con una inclinación moderada, sin apoyarte en las barras. Ajusta la velocidad a tu nivel.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "TROTE_CINTA",
+    "nombre": "Trote en cinta",
+    "musculo_principal": "cardio",
+    "musculos_secundarios": [
+      "cuadriceps",
+      "pantorrillas"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "CINTA_CORRER"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Trota a un ritmo en el que puedas hablar entrecortado. Aumenta tiempo o velocidad de forma gradual.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "BICICLETA_ESTATICA",
+    "nombre": "Bicicleta estática",
+    "musculo_principal": "cardio",
+    "musculos_secundarios": [
+      "cuadriceps",
+      "gluteos"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "BICICLETA_ESTATICA"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Ajusta el asiento a la altura de la cadera y pedalea con resistencia moderada, manteniendo la espalda recta.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "ELIPTICA",
+    "nombre": "Elíptica",
+    "musculo_principal": "cardio",
+    "musculos_secundarios": [
+      "cuadriceps",
+      "gluteos"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "ELIPTICA"
+    ],
+    "contraindicaciones": [],
+    "instrucciones": "Mantén una postura erguida y un movimiento fluido, empujando y jalando con brazos y piernas.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "REMO_ERGOMETRO",
+    "nombre": "Remo en ergómetro",
+    "musculo_principal": "cardio",
+    "musculos_secundarios": [
+      "espalda",
+      "cuadriceps"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "REMO_ERGOMETRO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Empuja con las piernas, luego inclina el torso y jala con los brazos; regresa en el orden inverso, de forma fluida.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "SALTOS_TIJERA",
+    "nombre": "Saltos de tijera",
+    "musculo_principal": "cardio",
+    "musculos_secundarios": [
+      "hombros",
+      "pantorrillas"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "De pie, salta abriendo piernas y brazos a la vez y vuelve a juntarlos. Aterriza suave sobre las puntas.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "TROTE_EN_EL_LUGAR",
+    "nombre": "Trote en el lugar",
+    "musculo_principal": "cardio",
+    "musculos_secundarios": [
+      "cuadriceps",
+      "pantorrillas"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Trota sin desplazarte llevando las rodillas a media altura y moviendo los brazos de forma natural.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "BURPEES",
+    "nombre": "Burpees",
+    "musculo_principal": "cardio",
+    "musculos_secundarios": [
+      "pecho",
+      "cuadriceps",
+      "core"
+    ],
+    "dificultad": "dificil",
+    "multiarticular": true,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "muneca",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "hombro",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      },
+      {
+        "zona": "espalda_baja",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Desde de pie baja a plancha, haz una flexión si puedes, regresa los pies y salta. Mantén un ritmo que controles.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "CAMINATA_RAPIDA",
+    "nombre": "Caminata rápida al aire libre",
+    "musculo_principal": "cardio",
+    "musculos_secundarios": [
+      "gluteos",
+      "pantorrillas"
+    ],
+    "dificultad": "facil",
+    "multiarticular": false,
+    "categoria_equipo": "sin_equipo",
+    "maquinas": [],
+    "contraindicaciones": [
+      {
+        "zona": "tobillo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Camina a paso ligero, con la espalda recta y los brazos en movimiento. Ideal para empezar o para días de descanso activo.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "SENTADILLA_PENDULO",
+    "nombre": "Sentadilla en péndulo",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos",
+      "pantorrillas"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "PENDULO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoya la espalda firme contra el respaldo con los hombros bajo los cojines. Coloca los pies en la plataforma a la anchura de las caderas. Desbloquea la seguridad y desciende de forma controlada siguiendo la trayectoria guiada del péndulo hasta lograr máxima flexión de rodilla sin despegar los talones ni curvar la espalda baja. Empuja desde la planta de los pies para extender las piernas con fuerza sin bloquear bruscamente las rodillas. Nota: Al eliminar la carga axial sobre la columna lumbar, es ideal para personas con molestias en la espalda baja.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "HIP_THRUST_MAQ",
+    "nombre": "Empuje de cadera en máquina (Hip Thrust)",
+    "musculo_principal": "gluteos",
+    "musculos_secundarios": [
+      "isquiotibiales"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "HIP_THRUST_MAQ"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "cadera",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Coloca la almohadilla o cinturón acolchado sobre la pelvis y apoya la parte media de la espalda en el soporte. Apoya los pies a la anchura de hombros y empuja con los talones extendiendo la cadera hasta que el torso y los muslos formen una línea horizontal paralela. Contrae firmemente los glúteos arriba por un segundo y desciende de manera controlada.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "BELT_SQUAT",
+    "nombre": "Sentadilla con cinturón (Belt Squat)",
+    "musculo_principal": "cuadriceps",
+    "musculos_secundarios": [
+      "gluteos"
+    ],
+    "dificultad": "media",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "BELT_SQUAT"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "rodilla",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Asegura el cinturón alrededor de la pelvis y conéctalo al gancho de la máquina. Párate en las plataformas, mantén el torso erguido y desciende en sentadilla. La carga se aplica directamente en la pelvis, liberando totalmente la columna y los hombros de cualquier compresión.",
+    "contraindicaciones_revisadas": false
+  },
+  {
+    "codigo": "REMO_PECHO_APOYADO",
+    "nombre": "Remo con apoyo en el pecho",
+    "musculo_principal": "espalda",
+    "musculos_secundarios": [
+      "biceps",
+      "hombros"
+    ],
+    "dificultad": "facil",
+    "multiarticular": true,
+    "categoria_equipo": "maquina",
+    "maquinas": [
+      "REMO_PECHO_APOYADO"
+    ],
+    "contraindicaciones": [
+      {
+        "zona": "codo",
+        "nivel": "precaucion"
+      }
+    ],
+    "instrucciones": "Apoya el esternón contra la almohadilla acolchada para anular el esfuerzo de la espalda baja. Toma las manijas y jala llevando los codos hacia atrás y retrayendo las escápulas. Pausa un segundo contrayendo la espalda y regresa lentamente extendiendo los brazos sin redondear los hombros.",
+    "contraindicaciones_revisadas": false
+  }
+]
