@@ -69,6 +69,12 @@ class Settings(BaseSettings):
     # PG-28: la adaptación del día tarda menos de 10 s.
     adaptacion_tiempo_max_seg: float = 8.0
 
+    # Sprint 4, sesión en vivo. PG-37: completa = al menos este % de las series y un tiempo coherente (no menos de
+    # este % del tiempo estimado). Una sesión abierta más de estas horas se cierra sola con lo registrado.
+    sesion_pct_completa: float = 0.8
+    sesion_tiempo_min_pct: float = 0.4
+    sesion_horas_max: int = 6
+
     # PG-49: límites de IA por usuario al día. Al llegar al límite se ofrece el camino sin IA (elegir a mano / reglas).
     ia_limite_fotos_dia: int = 50
     ia_limite_busquedas_web_dia: int = 3

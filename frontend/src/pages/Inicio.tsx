@@ -2,13 +2,14 @@
  * Inicio = "Hoy" (PG-28). Si tienes más de un gym, lo primero es elegir dónde estás (el último usado va primero y
  * preseleccionado); con uno solo se salta. Luego se ve el día que toca del plan adaptado a las máquinas de ese gym,
  * con qué ejercicios cambiaron y por qué. Si hoy no toca, se ofrece adelantar el siguiente día.
+ * Sprint 4: "Iniciar rutina de hoy" congela esa sesión y abre la sesión en vivo; si quedó una a medias, se continúa.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { Aviso, Insignia } from '../components/UI';
-import { IconCamera, IconDumbbell, IconLock, IconMapPin, IconZap } from '../components/Icons';
+import { IconActivity, IconCamera, IconDumbbell, IconLock, IconMapPin, IconZap } from '../components/Icons';
 import { useAuth } from '../features/auth/AuthContext';
-import { fechaLocal, gymsApi, planApi } from '../lib/endpoints';
+import { fechaLocal, gymsApi, planApi, sesionesApi } from '../lib/endpoints';
 import { ApiError } from '../lib/http';
 import type { DiaSemana, Hoy } from '../lib/tipos';
 import { usePerfil } from '../lib/usePerfil';
@@ -43,6 +44,8 @@ export default function Inicio() {
   const [eligiendo, setEligiendo] = useState(false);
   const [seleccion, setSeleccion] = useState<number | null>(null);
   const [adelantado, setAdelantado] = useState<DiaSemana | null>(null);
+  const [iniciando, setIniciando] = useState(false);
+  const nav = useNavigate();
   const primerNombre = usuario?.nombre.split(' ')[0] ?? '';
 
   const cargar = useCallback(async (gymId: number | null, dia: DiaSemana | null) => {
@@ -72,8 +75,23 @@ export default function Inicio() {
     void cargar(gymGuardado(), dia);
   }
 
+  // PG-30: la sesión se congela al iniciar; desde aquí ya no se cambia de gym ni de día.
+  async function iniciar() {
+    if (!hoy?.sesion) return;
+    setIniciando(true); setError(null);
+    try {
+      const s = await sesionesApi.iniciar({ gym_id: hoy.sesion.gym_id ?? undefined, dia: hoy.sesion.dia });
+      nav(`/sesion/${s.id}`);
+    } catch (e) {
+      if (e instanceof ApiError && e.codigo === 'sesion_en_curso') { const a = await sesionesApi.actual().catch(() => null); if (a) return nav(`/sesion/${a.id}`); }
+      setError(e instanceof Error ? e.message : 'No se pudo iniciar la rutina.');
+      setIniciando(false);
+    }
+  }
+
   const sesion = hoy?.sesion;
   const variosGyms = (hoy?.gyms.length ?? 0) > 1;
+  const enCurso = hoy?.sesion_en_curso_id ?? null;
 
   return (
     <div className="pantalla stack" style={{ gap: 16 }}>
@@ -98,6 +116,16 @@ export default function Inicio() {
         <Link to="/consentimiento" className="card fila" style={{ textDecoration: 'none', color: 'inherit' }}>
           <IconLock width={22} height={22} style={{ color: 'var(--primary-dark)', flexShrink: 0 }} />
           <span style={{ fontSize: 14 }}><b>Decide sobre tus datos de salud.</b> Necesitamos tu permiso para guardar peso, medidas y lesiones.</span>
+        </Link>
+      )}
+
+      {enCurso != null && (
+        <Link to={`/sesion/${enCurso}`} className="hero-hoy fila" style={{ textDecoration: 'none', gap: 12 }}>
+          <IconActivity style={{ color: 'var(--neon)', flexShrink: 0 }} />
+          <span className="stack" style={{ gap: 2 }}>
+            <b style={{ color: '#fff', fontSize: 16 }}>Tienes una rutina en curso</b>
+            <span style={{ color: '#b9cbbf', fontSize: 13.5 }}>Toca para continuar donde la dejaste.</span>
+          </span>
         </Link>
       )}
 
@@ -165,6 +193,11 @@ export default function Inicio() {
               : ' · Todo disponible en este gym'}
           </p>
           {cargando && <p className="pulse-latido" style={{ fontSize: 13, color: 'var(--neon)' }}>Adaptando…</p>}
+          {enCurso == null && sesion.ejercicios.length > 0 && (
+            <button className="btn btn-neon" disabled={cargando || iniciando} onClick={() => void iniciar()}>
+              {iniciando ? 'Preparando tu rutina…' : '▶ Iniciar rutina de hoy'}
+            </button>
+          )}
         </section>
       )}
 
@@ -198,9 +231,6 @@ export default function Inicio() {
             ))}
             {sesion.omitidos.map(o => <Aviso key={o.nombre} tipo="info"><b>{o.nombre}:</b> {o.motivo}</Aviso>)}
           </div>
-          <p className="muted" style={{ fontSize: 12.5, textAlign: 'center' }}>
-            Iniciar la rutina con cronómetro y registro de series llega con la sesión en vivo (Sprint 4).
-          </p>
         </>
       )}
 

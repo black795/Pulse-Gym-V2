@@ -215,6 +215,75 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
 }
 .pill-gym:disabled { cursor: default; }
 
+/* ---------------- Sesión en vivo (Sprint 4) ---------------- */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.recortar { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sesion-cabecera {
+  position: sticky; top: 0; z-index: 20; background: var(--sidebar); color: #fff;
+  padding: calc(12px + env(safe-area-inset-top)) 16px 0; display: flex; flex-direction: column; gap: 12px;
+}
+.sesion-cabecera .btn { width: auto; padding: 0 16px; font-size: 13.5px; }
+.sesion-estado { font-size: 12px; font-weight: 700; color: #8fad99; }
+.sesion-estado span { color: var(--neon); }
+.cronometro { font: 800 34px 'Sora', sans-serif; color: var(--neon); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.cronometro small { font-size: 14px; color: #8fad99; font-weight: 700; }
+.metricas-vivo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); background: var(--black-2); border-radius: 12px; padding: 10px 0; }
+.metricas-vivo > div { text-align: center; padding: 0 8px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.metricas-vivo > div + div { border-left: 1px solid rgba(255,255,255,.1); }
+.metricas-vivo b { font: 800 15px 'Sora', sans-serif; color: var(--neon); }
+.metricas-vivo span { font-size: 11px; font-weight: 600; color: #6f9a7f; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sesion-cabecera .barra-subida { margin: 0 -16px; border-radius: 0; height: 4px; }
+
+.serie-tarjeta { padding: 14px; }
+.serie-tarjeta.activa { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-tint); }
+.serie-tarjeta.cerrada { opacity: .65; }
+.chip-ocupada { border-color: var(--warning-tint); color: var(--warning); min-height: 40px; font-size: 12.5px; }
+.chip-molesta { border-color: var(--danger-tint); color: var(--danger); min-height: 40px; font-size: 12.5px; }
+.chip:disabled { opacity: .55; cursor: not-allowed; }
+.pill-record { align-self: flex-start; background: var(--primary-tint); color: var(--primary-dark); border-radius: 999px; padding: 4px 12px; font-size: 12.5px; font-weight: 700; }
+
+.tabla-series { display: flex; flex-direction: column; }
+.tabla-series-fila {
+  display: grid; grid-template-columns: 34px minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) 46px; gap: 8px; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 14px; text-align: center;
+}
+.tabla-series-fila:last-child { border-bottom: 0; }
+.tabla-series-fila.cabeza { font-size: 11px; font-weight: 700; color: var(--muted); padding-top: 0; }
+.tabla-series-fila .num { font: 700 14px 'Sora', sans-serif; }
+.tabla-series-fila .muted { font-size: 12px; }
+.tabla-series-fila.hecha { background: #F3FBF5; }
+.input-serie {
+  width: 100%; height: 44px; text-align: center; border: 1.5px solid var(--border); border-radius: 10px; background: #fff;
+  font: 700 16px 'Sora', sans-serif; color: var(--ink); padding: 0 4px;
+}
+.input-serie::placeholder { color: var(--muted-2); }
+.boton-listo {
+  width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--bg); color: var(--muted-2);
+  display: grid; place-items: center; cursor: pointer;
+}
+.boton-listo:not(:disabled) { border-color: var(--primary); color: var(--primary-dark); }
+.boton-listo.hecho { background: var(--primary); border-color: var(--primary); color: #fff; }
+.boton-listo:disabled { cursor: not-allowed; }
+.insignia-record { grid-column: 1 / -1; justify-self: start; background: var(--neon); color: var(--sidebar); border-radius: 999px; padding: 2px 10px; font: 800 11.5px 'Sora', sans-serif; }
+
+.descanso-flotante {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 30;
+  width: min(456px, calc(100% - 24px)); background: var(--sidebar); border: 2px solid var(--neon); border-radius: 18px;
+  padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 10px 30px rgba(10,18,13,.35); color: #fff;
+}
+.descanso-flotante .btn { min-height: 44px; font-size: 14px; padding: 0 8px; }
+.descanso-flotante .btn-claro { background: var(--black-2); color: #e6f2ea; border-color: #2a3a30; }
+
+.medalla { border-radius: 20px; padding: 22px 18px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.medalla.completa { background: var(--sidebar); color: #fff; }
+.medalla.completa h1 { color: var(--neon); }
+.medalla.parcial { background: var(--warning-tint); color: #92400E; }
+@media (min-width: 768px) {
+  .sesion-vivo { max-width: 760px; }
+  .descanso-flotante { width: min(560px, calc(100% - 24px)); }
+}
+
 /* ---------------- Escritorio y tablet (>= 768px) ----------------
  * Debajo de 768px todo lo de arriba queda igual (PWA en el celular). Las clases de esta sección
  * solo agrupan contenido; en el celular se comportan como una columna. */

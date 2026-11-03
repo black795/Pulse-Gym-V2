@@ -8,7 +8,7 @@
       "MaintenanceDB": "pulse_gym",
       "Username": "pulse",
       "SSLMode": "prefer",
-      "PassFile": "C:/Users/Windows 11 Pro/AppData/Roaming/postgresql/pgpass.conf"
+      "PassFile": "C:/Users/alan3/AppData/Roaming/postgresql/pgpass.conf"
     }
   }
 }

@@ -7,7 +7,7 @@ from app.api.deps import usuario_actual
 from app.db.session import get_db
 from app.models import Usuario
 from app.schemas.plan import DiaSemana, GenerarPlanIn, HoyOut, PlanEstadoOut, UsoIAOut
-from app.services import adaptacion_service, ia_uso_service, plan_service
+from app.services import adaptacion_service, ia_uso_service, plan_service, sesion_service
 
 router = APIRouter(tags=["Plan semanal"])
 
@@ -35,7 +35,10 @@ def hoy(
     usuario: Usuario = Depends(usuario_actual),
 ):
     """PG-28: el día que toca del plan, adaptado a las máquinas disponibles hoy en ese gym."""
-    return adaptacion_service.hoy(db, usuario, gym_id=gym_id, dia=dia, fecha=fecha)
+    resultado = adaptacion_service.hoy(db, usuario, gym_id=gym_id, dia=dia, fecha=fecha)
+    en_curso = sesion_service.en_curso(db, usuario)  # PG-30: si hay una rutina iniciada, la app ofrece continuarla
+    resultado.sesion_en_curso_id = en_curso.id if en_curso else None
+    return resultado
 
 
 @router.get("/ia/uso", response_model=UsoIAOut)

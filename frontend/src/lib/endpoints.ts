@@ -1,8 +1,8 @@
 import { api, subirArchivo } from './http';
 import type {
   Confirmacion, ConsentimientoEstado, DiaSemana, EjercicioFicha, EjercicioResumen, EstadoMaquina, Foto, GrupoMuscular, GymDetalle, GymMaquina, GymResumen,
-  GymsRespuesta, Hoy, Lesion, LesionesRespuesta, MaquinaCatalogo, Medicion, Perfil, PerfilEnvio, PlanEstado, Reconocimiento,
-  Sesion, TextoConsentimiento, Usuario, Zona,
+  GymsRespuesta, Hoy, Lesion, LesionesRespuesta, MaquinaCatalogo, Medicion, MotivoReemplazo, OpcionesReemplazo, Perfil,
+  PerfilEnvio, PlanEstado, Reconocimiento, Sesion, SesionVivo, TextoConsentimiento, Usuario, Zona,
 } from './tipos';
 
 export const authApi = {
@@ -93,4 +93,25 @@ export const planApi = {
     if (f.dia) p.set('dia', f.dia);
     return api<Hoy>(`/hoy?${p}`, { limiteMs: 30_000 });
   },
+};
+
+export const sesionesApi = {
+  actual: () => api<SesionVivo | null>('/sesiones/actual'),
+  // PG-30: arranca la sesión de hoy (adaptada al gym) y la congela.
+  iniciar: (f: { gym_id?: number; dia?: DiaSemana } = {}) =>
+    api<SesionVivo>('/sesiones', { method: 'POST', body: { ...f, fecha: fechaLocal() }, limiteMs: 30_000 }),
+  ver: (id: number) => api<SesionVivo>(`/sesiones/${id}`),
+  descartar: (id: number) => api<null>(`/sesiones/${id}`, { method: 'DELETE' }),
+  serie: (id: number, seId: number, numero: number, d: { peso_kg: number; repeticiones: number }) =>
+    api<SesionVivo>(`/sesiones/${id}/ejercicios/${seId}/series/${numero}`, { method: 'PUT', body: d }),
+  borrarSerie: (id: number, seId: number, numero: number) =>
+    api<SesionVivo>(`/sesiones/${id}/ejercicios/${seId}/series/${numero}`, { method: 'DELETE' }),
+  reemplazos: (id: number, seId: number, motivo: MotivoReemplazo, zona?: string) => {
+    const p = new URLSearchParams({ motivo });
+    if (zona) p.set('zona', zona);
+    return api<OpcionesReemplazo>(`/sesiones/${id}/ejercicios/${seId}/reemplazos?${p}`);
+  },
+  reemplazar: (id: number, seId: number, d: { ejercicio_id: number; motivo: MotivoReemplazo; zona?: string; guardar_lesion?: boolean }) =>
+    api<SesionVivo>(`/sesiones/${id}/ejercicios/${seId}/reemplazar`, { method: 'POST', body: d }),
+  finalizar: (id: number) => api<SesionVivo>(`/sesiones/${id}/finalizar`, { method: 'POST' }),
 };

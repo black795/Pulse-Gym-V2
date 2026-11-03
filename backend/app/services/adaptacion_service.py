@@ -119,7 +119,7 @@ def adaptar(db: Session, usuario: Usuario, rutina_dia: RutinaDia, gym: Gym | Non
             ejercicios.append(EjercicioHoyOut(
                 orden=i, ejercicio=plan_service.ejercicio_breve(f["ejercicio"], grupos), original=None, cambio=False,
                 motivo_cambio=None, por_que_reemplazo=None, precaucion=f["precaucion"], series=re.series,
-                reps_min=re.reps_min, reps_max=re.reps_max, descanso_seg=re.descanso_seg,
+                reps_min=re.reps_min, reps_max=re.reps_max, descanso_seg=re.descanso_seg, rutina_ejercicio_id=re.id,
             ))
             continue
         elegido_codigo, frase = por_que.get(f["ejercicio"].codigo, (f["opciones"][0].codigo, None))
@@ -137,6 +137,7 @@ def adaptar(db: Session, usuario: Usuario, rutina_dia: RutinaDia, gym: Gym | Non
             original=plan_service.ejercicio_breve(f["ejercicio"], grupos), cambio=True, motivo_cambio=f["motivo"],
             por_que_reemplazo=frase or f"Trabaja el mismo músculo ({grupo.lower()}) con lo que hay en este gym.",
             precaucion=alt.precaucion, series=series, reps_min=rmin, reps_max=rmax, descanso_seg=descanso,
+            rutina_ejercicio_id=re.id,
         ))
 
     avisos = []

@@ -19,6 +19,7 @@ import Plan from './pages/Plan';
 import Recuperar from './pages/Recuperar';
 import Registro from './pages/Registro';
 import Restablecer from './pages/Restablecer';
+import Sesion from './pages/Sesion';
 
 export default function App() {
   return (
@@ -31,6 +32,8 @@ export default function App() {
             <Route path="/restablecer" element={<Frame><Restablecer /></Frame>} />
             <Route path="/consentimiento" element={<RequiereSesion><Frame><Consentimiento /></Frame></RequiereSesion>} />
             <Route path="/onboarding" element={<RequiereSesion><Frame><Onboarding /></Frame></RequiereSesion>} />
+            {/* Sesión en vivo a pantalla completa: sin barra inferior para no salir por error en medio de una serie */}
+            <Route path="/sesion/:id" element={<RequiereSesion><Sesion /></RequiereSesion>} />
             <Route element={<RequiereSesion><AppShell /></RequiereSesion>}>
               <Route index element={<Inicio />} />
               <Route path="/plan" element={<Plan />} />
