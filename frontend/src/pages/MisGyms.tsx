@@ -36,32 +36,36 @@ export default function MisGyms() {
       </header>
       {error && <Aviso>{error}</Aviso>}
 
-      {datos?.gyms.map(g => (
-        <Link key={g.id} to={`/gyms/${g.id}`} className="card fila" style={{ textDecoration: 'none', color: 'inherit', gap: 12 }}>
-          <span style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--primary-tint)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-            <IconDumbbell style={{ color: 'var(--primary-dark)' }} />
-          </span>
-          <span className="stack" style={{ gap: 3, flex: 1, minWidth: 0 }}>
-            <span className="fila" style={{ gap: 8, flexWrap: 'wrap' }}>
-              <b style={{ fontSize: 16 }}>{g.nombre}</b>
-              {g.es_ultimo_usado && <Insignia tono="ok">Último usado</Insignia>}
-            </span>
-            {g.ubicacion && <span className="muted" style={{ fontSize: 13 }}>{g.ubicacion}</span>}
-            <span className="muted" style={{ fontSize: 13 }}>
-              {g.maquinas === 0 && g.implementos === 0 ? 'Vacío: agrega sus máquinas' : `${g.maquinas} máquinas · ${g.implementos} implementos`}
-            </span>
-          </span>
-          <IconChevronRight style={{ color: 'var(--muted-2)' }} />
-        </Link>
-      ))}
+      {!!datos?.gyms.length && (
+        <div className="grilla-tarjetas" style={{ gap: 16 }}>
+          {datos.gyms.map(g => (
+            <Link key={g.id} to={`/gyms/${g.id}`} className="card fila" style={{ textDecoration: 'none', color: 'inherit', gap: 12 }}>
+              <span style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--primary-tint)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+                <IconDumbbell style={{ color: 'var(--primary-dark)' }} />
+              </span>
+              <span className="stack" style={{ gap: 3, flex: 1, minWidth: 0 }}>
+                <span className="fila" style={{ gap: 8, flexWrap: 'wrap' }}>
+                  <b style={{ fontSize: 16 }}>{g.nombre}</b>
+                  {g.es_ultimo_usado && <Insignia tono="ok">Último usado</Insignia>}
+                </span>
+                {g.ubicacion && <span className="muted" style={{ fontSize: 13 }}>{g.ubicacion}</span>}
+                <span className="muted" style={{ fontSize: 13 }}>
+                  {g.maquinas === 0 && g.implementos === 0 ? 'Vacío: agrega sus máquinas' : `${g.maquinas} máquinas · ${g.implementos} implementos`}
+                </span>
+              </span>
+              <IconChevronRight style={{ color: 'var(--muted-2)' }} />
+            </Link>
+          ))}
+        </div>
+      )}
 
       {lleno && <Aviso tipo="info">Llegaste al máximo de {datos!.maximo} gyms. Elimina uno para agregar otro.</Aviso>}
 
       {!lleno && datos && !abierto && (
-        <button className="btn" onClick={() => setAbierto(true)}><IconPlus width={18} height={18} /> Agregar gym</button>
+        <button className="btn btn-auto" onClick={() => setAbierto(true)}><IconPlus width={18} height={18} /> Agregar gym</button>
       )}
       {!lleno && abierto && (
-        <form className="card stack" onSubmit={crear}>
+        <form className="card stack form-angosto" onSubmit={crear}>
           <h2 style={{ fontSize: 17 }}>{datos?.gyms.length ? 'Nuevo gym' : 'Registra tu primer gym'}</h2>
           <Campo etiqueta="Nombre" placeholder="Ej. Gym Centro, Mi casa" maxLength={60} required autoFocus
             value={nuevo.nombre} onChange={e => setNuevo(p => ({ ...p, nombre: e.target.value }))} />

@@ -99,7 +99,7 @@ export interface PlanEstado {
 export interface EjercicioHoy {
   orden: number; ejercicio: EjercicioBreve; original: EjercicioBreve | null; cambio: boolean;
   motivo_cambio: string | null; por_que_reemplazo: string | null; precaucion: boolean;
-  series: number; reps_min: number; reps_max: number; descanso_seg: number;
+  series: number; reps_min: number; reps_max: number; descanso_seg: number; rutina_ejercicio_id?: number | null;
 }
 export interface SesionHoy {
   dia: DiaSemana; dia_nombre: string; enfoque: string; gym_id: number | null; gym_nombre: string | null;
@@ -111,5 +111,30 @@ export interface Hoy {
   fecha: string; dia: DiaSemana; dia_nombre: string; plan_existe: boolean; es_dia_de_entreno: boolean;
   siguiente_dia: { dia: DiaSemana; dia_nombre: string; enfoque: string } | null;
   gyms: { id: number; nombre: string; es_ultimo_usado: boolean; maquinas: number }[];
-  requiere_elegir_gym: boolean; sesion: SesionHoy | null;
+  requiere_elegir_gym: boolean; sesion: SesionHoy | null; sesion_en_curso_id: number | null;
+}
+
+// ---------------- Sprint 4: sesión en vivo ----------------
+export type MotivoReemplazo = 'maquina_ocupada' | 'molestia_dolor';
+export interface SerieHecha { numero: number; peso_kg: number; repeticiones: number; es_record: boolean; completada_at: string }
+export interface SesionEjercicio {
+  id: number; orden: number; ejercicio: EjercicioBreve; reemplaza: EjercicioBreve | null; motivo: string; nota: string | null;
+  precaucion: boolean; series: number; reps_min: number; reps_max: number; descanso_seg: number; cerrado: boolean;
+  hechas: SerieHecha[]; anterior: { numero: number; peso_kg: number; repeticiones: number }[];
+  mejor: { peso_kg: number; repeticiones: number } | null;
+}
+export interface ResumenSesion {
+  estado: 'completa' | 'parcial'; cuenta_asistencia: boolean; duracion_seg: number; duracion_estimada_seg: number;
+  series_hechas: number; series_planeadas: number; porcentaje: number; volumen_kg: number;
+  records: { ejercicio: string; peso_kg: number; repeticiones: number }[]; mensaje: string;
+}
+export interface SesionVivo {
+  id: number; estado: 'en_curso' | 'completa' | 'parcial'; fecha: string; dia: DiaSemana; enfoque: string;
+  gym_id: number | null; gym_nombre: string | null; inicio_at: string; fin_at: string | null; ahora: string;
+  duracion_estimada_seg: number; series_hechas: number; series_planeadas: number; volumen_kg: number;
+  cerrada_auto: boolean; ejercicios: SesionEjercicio[]; resumen: ResumenSesion | null;
+}
+export interface Alternativa extends EjercicioResumen { nivel_busqueda: number; precaucion: boolean }
+export interface OpcionesReemplazo {
+  motivo: MotivoReemplazo; zona: string | null; opciones: Alternativa[]; puede_guardar_lesion: boolean; aviso: string | null;
 }

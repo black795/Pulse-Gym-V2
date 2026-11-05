@@ -105,6 +105,7 @@ class EjercicioHoyOut(BaseModel):
     reps_min: int
     reps_max: int
     descanso_seg: int
+    rutina_ejercicio_id: int | None = None  # Sprint 4: de qué ejercicio del plan sale (las adaptaciones viejas no lo tienen)
 
 
 class OmitidoOut(BaseModel):
@@ -145,6 +146,7 @@ class HoyOut(BaseModel):
     gyms: list[GymOpcionOut]  # primero el último usado (preseleccionado)
     requiere_elegir_gym: bool
     sesion: SesionHoyOut | None
+    sesion_en_curso_id: int | None = None  # Sprint 4: hay una rutina iniciada sin terminar (PG-30)
 
 
 # ---------------- PG-49 ----------------

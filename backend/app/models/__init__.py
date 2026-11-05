@@ -6,6 +6,7 @@ from app.models.catalogo import (
 from app.models.gym import FotoMaquina, Gym, GymMaquina, ReconocimientoIA
 from app.models.ia import LlamadaIA
 from app.models.plan import AdaptacionDia, Rutina, RutinaDia, RutinaEjercicio
+from app.models.sesion import SerieRegistrada, SesionEjercicio, SesionEntreno
 from app.models.seguridad import IntentoLogin, RecuperacionPassword
 from app.models.usuario import Lesion, Medicion, Usuario, UsuarioObjetivo
 
@@ -13,5 +14,6 @@ __all__ = [
     "AdaptacionDia", "Ejercicio", "EjercicioContraindicacion", "EjercicioMaquina", "EjercicioMusculo", "FotoMaquina",
     "GrupoMuscular", "Gym", "GymMaquina", "IntentoLogin", "Lesion", "LlamadaIA", "MaquinaCatalogo", "MaquinaFotoRef",
     "MaquinaPropuesta", "Medicion", "ReconocimientoIA", "RecuperacionPassword", "Rutina", "RutinaDia", "RutinaEjercicio",
+    "SerieRegistrada", "SesionEjercicio", "SesionEntreno",
     "Usuario", "UsuarioObjetivo", "ZonaLesion",
 ]

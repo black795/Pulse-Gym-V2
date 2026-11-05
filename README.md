@@ -1,14 +1,15 @@
-# Pulse Gym v2 — Entrenador IA (Sprints 1 a 3)
+# Pulse Gym v2 — Entrenador IA (Sprints 1 a 4)
 
 App web para celular (PWA) que arma tu entrenamiento según tu cuerpo, tus lesiones y las máquinas de tu gimnasio.
 Incluye el **Sprint 1** (cuenta, perfil, consentimiento, lesiones y catálogo), el **Sprint 2** (mis gyms, fotos de
 máquinas reconocidas con IA, inventario e implementos) y el **Sprint 3** (plan semanal con reglas + IA, validación,
-explicación, elegir el gym y adaptar la sesión del día, límites y costo de la IA).
-Estado de cada tarjeta: `SPRINT1.md`, `SPRINT2.md` y `SPRINT3.md`.
+explicación, elegir el gym y adaptar la sesión del día, límites y costo de la IA) y el **Sprint 4** (sesión en vivo:
+cronómetro, series, descanso con sonido, récords, máquina ocupada, «me molesta» y resumen al finalizar).
+Estado de cada tarjeta: `SPRINT1.md` a `SPRINT4.md`.
 
 ```
 pulse-gym-v2/
-├── backend/               API (Python + FastAPI). 168 pruebas automáticas.
+├── backend/               API (Python + FastAPI). 188 pruebas automáticas.
 │   └── catalogo/          Los 4 archivos JSON con máquinas y ejercicios (los edita el equipo)
 ├── frontend/              La app de celular (React + Vite), instalable como PWA
 ├── referencia-prototipos/ Pantallas viejas de la v1 para usar en sprints futuros
@@ -16,6 +17,7 @@ pulse-gym-v2/
 ├── SPRINT1.md             Estado honesto de cada tarjeta del Sprint 1
 ├── SPRINT2.md             Ídem Sprint 2 (+ cómo activar la IA gratuita)
 ├── SPRINT3.md             Ídem Sprint 3 (+ qué tan rápida es la IA gratuita)
+├── SPRINT4.md             Ídem Sprint 4 (sesión en vivo)
 └── docker-compose.yml     (opcional) PostgreSQL
 ```
 
@@ -49,7 +51,7 @@ copia el enlace de ahí. Para enviarlos de verdad, configura SMTP en `.env`.
 
 ## Pruebas
 ```
-cd backend && pytest          # 168 pruebas
+cd backend && pytest          # 188 pruebas
 cd frontend && npm run build  # revisa tipos y compila
 ```
 
@@ -67,6 +69,12 @@ Pestaña **Plan**: eliges los días y la IA arma la semana dentro de reglas fija
 todo se valida antes de mostrarse y, si la IA falla o tarda, se usan solo las reglas (nunca más de 18 s).
 Pestaña **Hoy**: eliges el gym y ves la sesión del día adaptada a sus máquinas. Costo de la IA para el equipo:
 `python -m app.scripts.costo_ia`. Detalles y medición de la IA gratuita en `SPRINT3.md`.
+
+## Sesión en vivo (Sprint 4)
+En **Hoy**, **▶ Iniciar rutina de hoy** congela la sesión adaptada a tu gym y abre la pantalla de entrenamiento:
+cronómetro, tabla de series con «la vez pasada», descanso con sonido, récords, «Máquina ocupada» y «Me molesta»
+(cambian solo la sesión de hoy). Al finalizar se califica como completa (≥ 80 % de las series en un tiempo coherente)
+o parcial. Detalles en `SPRINT4.md`.
 
 ## Instalarla como app (PWA)
 Solo funciona con la versión publicada (`npm run build`, servida por HTTPS): en el celular, menú del navegador →

@@ -54,7 +54,7 @@ export default function CatalogoEjercicios() {
       </header>
 
       {/* Buscador */}
-      <div style={{ position: 'relative' }}>
+      <div className="form-angosto" style={{ position: 'relative' }}>
         <IconSearch width={18} height={18} style={{ position: 'absolute', left: 14, top: 15, color: 'var(--muted)' }} />
         <input
           className="input"
@@ -127,7 +127,7 @@ export default function CatalogoEjercicios() {
       )}
 
       {/* Lista de ejercicios */}
-      <div className="stack" style={{ gap: 10 }}>
+      <div className="grilla-tarjetas">
         {filtrados.map(e => (
           <button
             key={e.id}
