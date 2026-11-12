@@ -52,7 +52,8 @@ def zonas_por_estado(usuario: Usuario) -> dict[str, str]:
     return zonas
 
 
-def crear(db: Session, usuario: Usuario, datos: LesionIn) -> Lesion:
+def _preparar_creacion(db: Session, usuario: Usuario, datos: LesionIn) -> Lesion:
+    """Prepara la lesión sin confirmar la transacción del caso de uso que llama."""
     consentimiento_service.exigir_consentimiento(usuario)
     lesion = Lesion(
         usuario_id=usuario.id, zona_id=_zona(db, datos.zona).id, tipo=datos.tipo,
@@ -61,6 +62,13 @@ def crear(db: Session, usuario: Usuario, datos: LesionIn) -> Lesion:
     )
     db.add(lesion)
     usuario.plan_requiere_regenerar = True  # PG-19 → PG-20: el plan se marca para regenerarse
+    db.flush()
+    db.expire(usuario, ["lesiones"])
+    return lesion
+
+
+def crear(db: Session, usuario: Usuario, datos: LesionIn) -> Lesion:
+    lesion = _preparar_creacion(db, usuario, datos)
     db.commit()
     db.refresh(lesion)
     db.expire(usuario, ["lesiones"])

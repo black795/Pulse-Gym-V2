@@ -68,9 +68,9 @@ def reconocer(db: Session, usuario: Usuario, foto_id: int) -> ReconocimientoOut:
     try:
         r = ia_vision.reconocer(fotos_storage.leer(foto.archivo), para_ia)
     except ia_vision.ErrorIA as e:
-        foto.estado, foto.ia_ultimo_error = "error_ia", str(e)[:300]
+        foto.estado, foto.ia_ultimo_error = "error_ia", e.categoria
         ia_uso_service.registrar(
-            db, usuario.id, "foto", modelo=get_settings().ia_proveedor_efectivo, resultado="error", detalle=str(e),
+            db, usuario.id, "foto", modelo=get_settings().ia_proveedor_efectivo, resultado="error", detalle=e.categoria,
             duracion_ms=int((time.perf_counter() - inicio) * 1000),
         )
         db.commit()

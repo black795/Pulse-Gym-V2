@@ -55,6 +55,60 @@ def red(monkeypatch):
 ESQUEMA = {"type": "OBJECT", "properties": {"ok": {"type": "BOOLEAN"}}}
 
 
+@pytest.mark.parametrize(("respuesta", "mensaje"), [
+    (Resp(503, {"error": {"message": "marcador-sintetico-privado"}}),
+     "La IA respondió con error 503: marcador-sintetico-privado"),
+    (Resp(429, {}), "Se alcanzó el límite gratuito de la IA por minuto. Espera un momento y reintenta."),
+    (Resp(200, {}), "La IA respondió algo que no se pudo entender."),
+])
+def test_mensajes_actuales_de_gemini_no_cambian(red, respuesta, mensaje):
+    red(gemini=respuesta)
+    with pytest.raises(ErrorIA) as exc:
+        ia_cliente._gemini("modelo-prueba", [], ESQUEMA, 0.1, 5)
+    assert str(exc.value) == mensaje
+
+
+def test_mensaje_actual_de_replicate_no_cambia(red):
+    red(replicate=Resp(503, {"detail": "marcador-sintetico-privado"}))
+    with pytest.raises(ErrorIA) as exc:
+        ia_cliente._replicate([], ESQUEMA, 0.1, 5)
+    assert str(exc.value) == "Replicate respondió con error 503: marcador-sintetico-privado"
+
+
+@pytest.mark.parametrize(("respuesta", "categoria"), [
+    (Resp(503, {"error": {"message": "marcador-sintetico-privado"}}), "ERROR_PROVEEDOR"),
+    (Resp(429, {}), "LIMITE_PROVEEDOR"),
+    (Resp(200, {}), "RESPUESTA_INVALIDA"),
+    (ia_cliente.httpx.ConnectError("marcador-sintetico-privado"), "CONEXION"),
+    (ia_cliente.httpx.ReadTimeout("marcador-sintetico-privado"), "TIMEOUT"),
+])
+def test_gemini_clasifica_errores_sin_alterar_su_mensaje(red, respuesta, categoria):
+    red(gemini=respuesta)
+    with pytest.raises(ErrorIA) as exc:
+        ia_cliente._gemini("modelo-prueba", [], ESQUEMA, 0.1, 5)
+    assert exc.value.categoria == categoria
+
+
+@pytest.mark.parametrize(("respuesta", "categoria"), [
+    (Resp(503, {"detail": "marcador-sintetico-privado"}), "ERROR_PROVEEDOR"),
+    (Resp(429, {"retry_after": 99}), "LIMITE_PROVEEDOR"),
+    (Resp(201, {"status": "succeeded", "output": "invalido"}), "RESPUESTA_INVALIDA"),
+    (ia_cliente.httpx.ConnectError("marcador-sintetico-privado"), "CONEXION"),
+    (ia_cliente.httpx.ReadTimeout("marcador-sintetico-privado"), "TIMEOUT"),
+])
+def test_replicate_clasifica_errores(red, respuesta, categoria):
+    red(replicate=respuesta)
+    with pytest.raises(ErrorIA) as exc:
+        ia_cliente._replicate([], ESQUEMA, 0.1, 5)
+    assert exc.value.categoria == categoria
+
+
+def test_error_ia_conserva_argumentos_y_restringe_la_categoria():
+    error = ErrorIA("mensaje", 7, categoria="marcador-sintetico-privado")
+    assert str(error) == str(Exception("mensaje", 7))
+    assert error.categoria == "ERROR_PROVEEDOR"
+
+
 def test_si_gemini_responde_no_se_usa_replicate(red):
     llamadas = red(gemini=gemini_ok(), replicate=replicate_ok())
     r = ia_cliente.pedir_json([{"text": "hola"}], ESQUEMA, limite_seg=10)

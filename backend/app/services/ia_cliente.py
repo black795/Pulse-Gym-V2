@@ -26,8 +26,15 @@ REPLICATE_URL = "https://api.replicate.com/v1/models/{modelo}/predictions"
 _es_copia: ContextVar[bool] = ContextVar("es_copia", default=False)
 
 
+CATEGORIAS_ERROR_IA = frozenset({"TIMEOUT", "CONEXION", "LIMITE_PROVEEDOR", "RESPUESTA_INVALIDA", "ERROR_PROVEEDOR"})
+
+
 class ErrorIA(Exception):
-    """La IA falló, tardó demasiado o respondió algo que no se entiende."""
+    """Conserva el mensaje público y clasifica por separado el diagnóstico interno."""
+
+    def __init__(self, *args: object, categoria: str = "ERROR_PROVEEDOR"):
+        super().__init__(*args)
+        self.categoria = categoria if categoria in CATEGORIAS_ERROR_IA else "ERROR_PROVEEDOR"
 
 
 @dataclass
@@ -98,7 +105,7 @@ def carrera(tareas: dict[str, Callable[[float], object]], fin: float, duplicar_t
     hilos.shutdown(wait=False, cancel_futures=True)  # las copias que siguen corriendo terminan solas al llegar a `fin`
     for clave in tareas:
         if clave not in resultados:
-            resultados[clave] = Resultado(None, ErrorIA(f"La IA tardó más de {int(fin - inicio)} segundos."),
+            resultados[clave] = Resultado(None, ErrorIA(f"La IA tardó más de {int(fin - inicio)} segundos.", categoria="TIMEOUT"),
                                           int((time.perf_counter() - inicio) * 1000))
     return resultados, duplicadas  # por cada copia lanzada, una de las dos respuestas se descarta
 
@@ -141,11 +148,11 @@ def _gemini(modelo: str, partes: list[dict], esquema: dict, temperatura: float, 
     try:
         r = httpx.post(URL.format(modelo=modelo), json=cuerpo, headers={"x-goog-api-key": cfg.gemini_api_key}, timeout=limite)
     except httpx.TimeoutException:
-        raise ErrorIA(f"La IA tardó más de {int(limite)} segundos.")
+        raise ErrorIA(f"La IA tardó más de {int(limite)} segundos.", categoria="TIMEOUT")
     except httpx.HTTPError as e:
-        raise ErrorIA(f"No se pudo conectar con la IA ({e.__class__.__name__}).")
+        raise ErrorIA(f"No se pudo conectar con la IA ({e.__class__.__name__}).", categoria="CONEXION")
     if r.status_code == 429:
-        raise ErrorIA("Se alcanzó el límite gratuito de la IA por minuto. Espera un momento y reintenta.")
+        raise ErrorIA("Se alcanzó el límite gratuito de la IA por minuto. Espera un momento y reintenta.", categoria="LIMITE_PROVEEDOR")
     if r.status_code != 200:
         raise ErrorIA(f"La IA respondió con error {r.status_code}: {_detalle_error(r)}")
     try:
@@ -154,7 +161,7 @@ def _gemini(modelo: str, partes: list[dict], esquema: dict, temperatura: float, 
         partes_r = cuerpo_r["candidates"][0]["content"]["parts"]
         datos = json.loads("".join(p.get("text", "") for p in partes_r if not p.get("thought")))
     except (KeyError, IndexError, TypeError, ValueError):
-        raise ErrorIA("La IA respondió algo que no se pudo entender.")
+        raise ErrorIA("La IA respondió algo que no se pudo entender.", categoria="RESPUESTA_INVALIDA")
     uso = cuerpo_r.get("usageMetadata") or {}
     return RespuestaIA(
         modelo=modelo, datos=datos, tokens_entrada=int(uso.get("promptTokenCount") or 0),
@@ -195,7 +202,7 @@ def _replicate(partes: list[dict], esquema: dict, temperatura: float, limite: fl
             except (ValueError, AttributeError):
                 espera = 99
             if intento == 1 or espera + 3 > fin - time.perf_counter():
-                raise ErrorIA("Replicate: se alcanzó el límite de pedidos por minuto.")
+                raise ErrorIA("Replicate: se alcanzó el límite de pedidos por minuto.", categoria="LIMITE_PROVEEDOR")
             time.sleep(espera)
         if r.status_code not in (200, 201):
             raise ErrorIA(f"Replicate respondió con error {r.status_code}: {_detalle_error(r)}")
@@ -205,22 +212,22 @@ def _replicate(partes: list[dict], esquema: dict, temperatura: float, limite: fl
             time.sleep(0.4)
             pred = httpx.get(pred["urls"]["get"], headers=encabezados, timeout=max(fin - time.perf_counter(), 0.5)).json()
     except httpx.TimeoutException:
-        raise ErrorIA(f"Replicate tardó más de {int(limite)} segundos.")
+        raise ErrorIA(f"Replicate tardó más de {int(limite)} segundos.", categoria="TIMEOUT")
     except httpx.HTTPError as e:
-        raise ErrorIA(f"No se pudo conectar con Replicate ({e.__class__.__name__}).")
+        raise ErrorIA(f"No se pudo conectar con Replicate ({e.__class__.__name__}).", categoria="CONEXION")
     if pred.get("status") != "succeeded":
         if pred.get("status") in ("starting", "processing"):
             try:  # no se espera más: se cancela para no pagar por algo que nadie va a usar
                 httpx.post(pred["urls"]["cancel"], headers=encabezados, timeout=3)
             except (httpx.HTTPError, KeyError):
                 pass
-            raise ErrorIA(f"Replicate tardó más de {int(limite)} segundos.")
+            raise ErrorIA(f"Replicate tardó más de {int(limite)} segundos.", categoria="TIMEOUT")
         raise ErrorIA(f"Replicate no pudo responder: {str(pred.get('error') or pred.get('status'))[:150]}")
     salida = pred.get("output")
     try:
         datos = _texto_a_json("".join(salida) if isinstance(salida, list) else str(salida or ""))
     except ValueError:
-        raise ErrorIA("La IA respondió algo que no se pudo entender.")
+        raise ErrorIA("La IA respondió algo que no se pudo entender.", categoria="RESPUESTA_INVALIDA")
     m = pred.get("metrics") or {}
     return RespuestaIA(modelo=modelo, datos=datos, tokens_entrada=int(m.get("token_input_count") or 0),
                        tokens_salida=int(m.get("token_output_count") or 0))
@@ -260,4 +267,4 @@ def pedir_json(partes: list[dict], esquema: dict, *, limite_seg: float, temperat
             return _gemini(modelo, partes, esquema, temperatura, limite)
         except ErrorIA as e:
             ultimo_error = e
-    raise ultimo_error or ErrorIA(f"La IA tardó más de {int(limite_seg)} segundos.")
+    raise ultimo_error or ErrorIA(f"La IA tardó más de {int(limite_seg)} segundos.", categoria="TIMEOUT")

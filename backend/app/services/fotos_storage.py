@@ -8,6 +8,7 @@
 import hashlib
 import hmac
 import io
+import logging
 import time
 import uuid
 from pathlib import Path
@@ -26,6 +27,7 @@ except ImportError:  # pragma: no cover
     HEIC_SOPORTADO = False
 
 FORMATOS = {"JPEG", "MPO", "PNG", "HEIF", "WEBP"}  # MPO = JPG de algunos celulares con varias capas
+log = logging.getLogger(__name__)
 
 
 def _raiz() -> Path:
@@ -80,8 +82,12 @@ def borrar(relativas: list[str]) -> None:
     for r in relativas:
         try:
             ruta(r).unlink(missing_ok=True)
-        except (OSError, ErrorNegocio):
-            pass
+        except PermissionError:
+            log.warning("No se pudo borrar una foto: PERMISO")
+        except OSError:
+            log.warning("No se pudo borrar una foto: IO")
+        except ErrorNegocio:
+            log.warning("No se pudo borrar una foto: RUTA_RECHAZADA")
 
 
 # ---------------- Enlaces temporales (PG-48) ----------------

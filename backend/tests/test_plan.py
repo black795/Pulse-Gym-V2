@@ -300,7 +300,7 @@ def test_respuesta_sin_el_formato_fijo_se_rechaza_y_se_pide_de_nuevo(client, usu
     plan = generar(client, usuario_listo(), ["lunes", "jueves"])["plan"]
     assert plan["origen"] == "ia" and plan["modelo"] == "modelo-prueba"
     lunes = _del_dia(_llamadas(db), "lunes")
-    assert [x.resultado for x in lunes] == ["rechazada", "ok"] and "formato" in lunes[0].detalle
+    assert [x.resultado for x in lunes] == ["rechazada", "ok"] and lunes[0].detalle == "lunes: RESPUESTA_INVALIDA"
 
 
 def test_un_ejercicio_contraindicado_se_rechaza_con_su_motivo_y_la_ia_recibe_el_error(client, usuario_listo, ia_plan, db):
@@ -320,7 +320,7 @@ def test_un_ejercicio_contraindicado_se_rechaza_con_su_motivo_y_la_ia_recibe_el_
     plan = generar(client, h, ["lunes", "jueves"])["plan"]
     assert "EXT_CUADRICEPS" not in codigos_plan(plan) and plan["origen"] == "ia"
     rechazo = _del_dia(_llamadas(db), "jueves")[0]
-    assert rechazo.resultado == "rechazada" and "EXT_CUADRICEPS" in rechazo.detalle and "contraindicado" in rechazo.detalle
+    assert rechazo.resultado == "rechazada" and rechazo.detalle == "jueves: RESPUESTA_INVALIDA"
     assert vistos[0] == [] and any("EXT_CUADRICEPS" in e for e in vistos[1])
 
 
@@ -387,6 +387,43 @@ def test_si_la_ia_falla_se_usa_la_version_de_solo_reglas(client, usuario_listo, 
     plan = generar(client, usuario_listo(), ["lunes", "jueves"])["plan"]
     assert plan["origen"] == "reglas"
     assert [x.resultado for x in _llamadas(db)] == ["error"] * 3  # general + 2 días, sin reintentos inútiles
+
+
+def test_error_de_plan_sanitiza_diagnostico_y_conserva_fallback(client, usuario_listo, ia_plan, db, caplog):
+    marcador = "marcador-sintetico-privado"
+
+    def falla(*_):
+        raise ErrorIA(marcador, categoria="TIMEOUT")
+
+    ia_plan(falla)
+    plan = generar(client, usuario_listo(), ["lunes", "jueves"])["plan"]
+    llamadas = _llamadas(db)
+    assert plan["origen"] == "reglas"
+    assert len(llamadas) == 3 and all(x.resultado == "error" and x.detalle.endswith(": TIMEOUT") for x in llamadas)
+    assert all(marcador not in x.detalle for x in llamadas)
+    assert marcador not in caplog.text
+
+
+def test_rechazo_de_plan_no_persiste_texto_externo_y_mantiene_reintentos(client, usuario_listo, ia_plan, db):
+    marcador = "marcador-sintetico-privado"
+    vistos = []
+
+    def falsa(ctx, pedido, _limite):
+        datos = _valido(ctx, pedido)[1]
+        if pedido.dia == "lunes":
+            vistos.append(list(pedido.errores_previos))
+            if len(vistos) == 1:
+                datos["ejercicios"][0]["codigo"] = marcador
+        return "modelo-prueba", datos
+
+    ia_plan(falsa)
+    plan = generar(client, usuario_listo(), ["lunes", "jueves"])["plan"]
+    llamadas = _del_dia(_llamadas(db), "lunes")
+    assert plan["origen"] == "ia"
+    assert [x.resultado for x in llamadas] == ["rechazada", "ok"]
+    assert llamadas[0].detalle == "lunes: RESPUESTA_INVALIDA"
+    assert marcador not in llamadas[0].detalle
+    assert vistos[0] == [] and any(marcador in error for error in vistos[1])
 
 
 def test_si_la_ia_es_lenta_no_se_pasa_del_tiempo_maximo(client, usuario_listo, ia_plan, cfg, db):
@@ -499,3 +536,52 @@ def test_alerta_al_equipo_si_el_costo_del_dia_supera_el_tope(client, usuario_lis
     generar(client, h)
     alertas = [c for c in correo.BUZON_DE_PRUEBA if c["para"] == "equipo@pulsegym.app"]
     assert len(alertas) == 1 and "tope" in alertas[0]["asunto"]  # una sola vez por día
+
+
+@pytest.mark.parametrize(
+    ("respuesta_inicial", "motivo"),
+    [
+        pytest.param({"explicacion": "   "}, "explicación general vacía", id="general-vacia"),
+        pytest.param({}, "formato JSON inválido (explicacion)", id="general-incompleta"),
+    ],
+)
+def test_reintento_general_conserva_motivo_y_orden_de_registros(
+    client, usuario_listo, ia_plan, db, respuesta_inicial, motivo,
+):
+    motivos_recibidos = []
+
+    def proveedor(ctx, pedido, limite):
+        if pedido.tipo == "general":
+            motivos_recibidos.append(list(pedido.errores_previos))
+            if len(motivos_recibidos) == 1:
+                return "modelo-prueba", respuesta_inicial
+        return _valido(ctx, pedido)
+
+    ia_plan(proveedor)
+    plan = generar(client, usuario_listo(), ["lunes", "jueves"])["plan"]
+
+    assert plan["origen"] == "ia"
+    assert motivos_recibidos == [[], [motivo]]
+    assert [(x.resultado, x.detalle) for x in _llamadas(db)] == [
+        ("rechazada", "general: RESPUESTA_INVALIDA"), ("ok", "lunes"),
+        ("ok", "jueves"), ("ok", "general"),
+    ]
+
+
+def test_plan_mixto_por_error_de_proveedor_se_persiste_con_diagnostico(client, usuario_listo, ia_plan, db):
+    def proveedor(ctx, pedido, limite):
+        if pedido.dia == "jueves":
+            raise ErrorIA("fallo simulado", categoria="CONEXION")
+        return _valido(ctx, pedido)
+
+    ia_plan(proveedor)
+    h = usuario_listo()
+    plan = generar(client, h, ["lunes", "jueves"])["plan"]
+
+    assert plan["origen"] == "mixto"
+    assert [d["dia"] for d in plan["dias"]] == ["lunes", "jueves"]
+    assert "reglas" in plan["explicacion"]
+    assert client.get("/api/plan", headers=h).json()["plan"] == plan
+    assert [(x.resultado, x.detalle) for x in _llamadas(db)] == [
+        ("ok", "general"), ("ok", "lunes"), ("error", "jueves: CONEXION"),
+    ]

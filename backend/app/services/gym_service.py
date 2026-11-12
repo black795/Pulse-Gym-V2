@@ -226,8 +226,14 @@ def _ultimo_usado_id(db: Session, usuario: Usuario) -> int | None:
     )
 
 
-def a_resumen(db: Session, usuario: Usuario, gym: Gym, ultimo_id: int | None = None) -> GymResumenOut:
-    if ultimo_id is None:
+_ULTIMO_NO_PROPORCIONADO = object()
+
+
+def a_resumen(
+    db: Session, usuario: Usuario, gym: Gym, ultimo_id: int | None | object = _ULTIMO_NO_PROPORCIONADO,
+) -> GymResumenOut:
+    """Si se omite ultimo_id, consulta el último; None indica que no existe."""
+    if ultimo_id is _ULTIMO_NO_PROPORCIONADO:
         ultimo_id = _ultimo_usado_id(db, usuario)
     return GymResumenOut(
         id=gym.id, nombre=gym.nombre, ubicacion=gym.ubicacion,
