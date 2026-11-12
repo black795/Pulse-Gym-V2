@@ -2,9 +2,13 @@
 ocupada), PG-22 (me molesta) y PG-37 (finalizar y calificar)."""
 from datetime import timedelta
 
+import pytest
+from sqlalchemy.orm import Session
+
 from app.db.base import ahora
+from app.db.session import SessionLocal
 from app.models import Ejercicio, SesionEntreno
-from app.services import catalogo_service
+from app.services import catalogo_service, lesion_service, sesion_service
 from tests.test_hoy import HOY, cfg, con_plan, gym_completo, nuevo_gym, plan_de_hoy  # noqa: F401  (fixtures)
 
 
@@ -237,6 +241,167 @@ def test_reemplazar_despues_de_algunas_series_conserva_lo_hecho(client, con_plan
 
 
 # ---------------- PG-22: me molesta ----------------
+def preparar_reemplazo_por_molestia(client, h, s, zona="hombro"):
+    ejercicio = s["ejercicios"][0]
+    base = f"/api/sesiones/{s['id']}/ejercicios/{ejercicio['id']}"
+    r = client.get(f"{base}/reemplazos", params={"motivo": "molestia_dolor", "zona": zona}, headers=h)
+    assert r.status_code == 200, r.text
+    assert r.json()["opciones"]
+    datos = {"ejercicio_id": r.json()["opciones"][0]["id"], "motivo": "molestia_dolor", "zona": zona}
+    return ejercicio, base, datos
+
+
+def test_reemplazo_por_molestia_sin_guardar_lesion(client, con_plan):
+    h = con_plan()
+    s = iniciar(client, h)
+    ejercicio, base, datos = preparar_reemplazo_por_molestia(client, h, s)
+
+    r = client.post(f"{base}/reemplazar", json={**datos, "guardar_lesion": False}, headers=h)
+
+    assert r.status_code == 200, r.text
+    reemplazo = next(e for e in r.json()["ejercicios"] if e["id"] == ejercicio["id"])
+    assert reemplazo["ejercicio"]["id"] == datos["ejercicio_id"]
+    assert client.get("/api/lesiones", headers=h).json()["lesiones"] == []
+
+
+def test_reemplazo_por_molestia_guarda_lesion_y_ejercicio(client, con_plan):
+    h = con_plan()
+    s = iniciar(client, h)
+    ejercicio, base, datos = preparar_reemplazo_por_molestia(client, h, s)
+
+    r = client.post(f"{base}/reemplazar", json={**datos, "guardar_lesion": True}, headers=h)
+
+    assert r.status_code == 200, r.text
+    reemplazo = next(e for e in r.json()["ejercicios"] if e["id"] == ejercicio["id"])
+    assert reemplazo["ejercicio"]["id"] == datos["ejercicio_id"]
+    lesiones = client.get("/api/lesiones", headers=h).json()["lesiones"]
+    assert [(lesion["zona"]["codigo"], lesion["estado"]) for lesion in lesiones] == [("hombro", "activa")]
+    actual = client.get(f"/api/sesiones/{s['id']}", headers=h).json()
+    assert next(e for e in actual["ejercicios"] if e["id"] == ejercicio["id"])["ejercicio"]["id"] == datos["ejercicio_id"]
+
+
+def test_reemplazo_con_lesion_confirma_una_sola_vez(client, con_plan, monkeypatch):
+    h = con_plan()
+    s = iniciar(client, h)
+    _, base, datos = preparar_reemplazo_por_molestia(client, h, s)
+    commit_original = Session.commit
+    confirmaciones = []
+
+    def contar_commit(db):
+        confirmaciones.append(db)
+        return commit_original(db)
+
+    with monkeypatch.context() as parche:
+        parche.setattr(Session, "commit", contar_commit)
+        r = client.post(f"{base}/reemplazar", json={**datos, "guardar_lesion": True}, headers=h)
+
+    assert r.status_code == 200, r.text
+    assert len(confirmaciones) == 1
+
+
+def test_reemplazo_no_duplica_lesion_activa_existente(client, con_plan):
+    h = con_plan()
+    s = iniciar(client, h)
+    creada = client.post("/api/lesiones", json={"zona": "hombro", "tipo": "aguda"}, headers=h)
+    assert creada.status_code == 201, creada.text
+    ejercicio, base, datos = preparar_reemplazo_por_molestia(client, h, s)
+
+    r = client.post(f"{base}/reemplazar", json={**datos, "guardar_lesion": True}, headers=h)
+
+    assert r.status_code == 200, r.text
+    reemplazo = next(e for e in r.json()["ejercicios"] if e["id"] == ejercicio["id"])
+    assert reemplazo["ejercicio"]["id"] == datos["ejercicio_id"]
+    lesiones = client.get("/api/lesiones", headers=h).json()["lesiones"]
+    assert [lesion["id"] for lesion in lesiones] == [creada.json()["id"]]
+
+
+def test_reemplazo_no_guarda_lesion_sin_consentimiento(client, con_plan):
+    h = con_plan()
+    s = iniciar(client, h)
+    r = client.put("/api/consentimiento", json={"acepta": False}, headers=h)
+    assert r.status_code == 200, r.text
+    ejercicio, base, datos = preparar_reemplazo_por_molestia(client, h, s)
+
+    r = client.post(f"{base}/reemplazar", json={**datos, "guardar_lesion": True}, headers=h)
+
+    assert r.status_code == 403
+    assert r.json()["codigo"] == "consentimiento_requerido"
+    actual = client.get(f"/api/sesiones/{s['id']}", headers=h).json()
+    assert next(e for e in actual["ejercicios"] if e["id"] == ejercicio["id"])["ejercicio"]["id"] == ejercicio["ejercicio"]["id"]
+    assert client.get("/api/lesiones", headers=h).json()["lesiones"] == []
+
+
+def test_fallo_despues_de_preparar_lesion_revierte_lesion_y_reemplazo(client, con_plan, monkeypatch):
+    h = con_plan()
+    s = iniciar(client, h)
+    ejercicio, base, datos = preparar_reemplazo_por_molestia(client, h, s)
+    preparar_lesion = lesion_service._preparar_creacion
+
+    def preparar_y_fallar(*args, **kwargs):
+        preparar_lesion(*args, **kwargs)  # flush sin commit
+        raise RuntimeError("fallo después de preparar la lesión")
+
+    with monkeypatch.context() as parche:
+        parche.setattr(lesion_service, "_preparar_creacion", preparar_y_fallar)
+        with pytest.raises(RuntimeError, match="fallo después de preparar la lesión"):
+            client.post(f"{base}/reemplazar", json={**datos, "guardar_lesion": True}, headers=h)
+
+    # Ambas lecturas abren una sesión nueva: comprueban lo que realmente quedó confirmado.
+    lesiones = client.get("/api/lesiones", headers=h).json()["lesiones"]
+    assert lesiones == []
+    actual = client.get(f"/api/sesiones/{s['id']}", headers=h).json()
+    reemplazo = next(e for e in actual["ejercicios"] if e["id"] == ejercicio["id"])
+    assert reemplazo["ejercicio"]["id"] == ejercicio["ejercicio"]["id"]
+    assert client.get("/api/perfil", headers=h).json()["plan_requiere_regenerar"] is False
+
+
+def test_fallo_tras_cambiar_ejercicio_revierte_lesion_y_reemplazo(client, con_plan, monkeypatch):
+    h = con_plan()
+    s = iniciar(client, h)
+    ejercicio, base, datos = preparar_reemplazo_por_molestia(client, h, s)
+
+    def fallar_al_elegir_maquina(*args, **kwargs):
+        raise RuntimeError("fallo después de cambiar el ejercicio")
+
+    with monkeypatch.context() as parche:
+        parche.setattr(sesion_service, "_gym_maquina_id", fallar_al_elegir_maquina)
+        with pytest.raises(RuntimeError, match="fallo después de cambiar el ejercicio"):
+            client.post(f"{base}/reemplazar", json={**datos, "guardar_lesion": True}, headers=h)
+
+    assert client.get("/api/lesiones", headers=h).json()["lesiones"] == []
+    actual = client.get(f"/api/sesiones/{s['id']}", headers=h).json()
+    reemplazo = next(e for e in actual["ejercicios"] if e["id"] == ejercicio["id"])
+    assert reemplazo["ejercicio"]["id"] == ejercicio["ejercicio"]["id"]
+
+
+def test_fallo_al_confirmar_revierte_lesion_y_reemplazo(client, con_plan, monkeypatch):
+    h = con_plan()
+    s = iniciar(client, h)
+    ejercicio, base, datos = preparar_reemplazo_por_molestia(client, h, s)
+
+    def fallar_al_confirmar(db):
+        raise RuntimeError("fallo al confirmar el reemplazo")
+
+    with monkeypatch.context() as parche:
+        parche.setattr(Session, "commit", fallar_al_confirmar)
+        with pytest.raises(RuntimeError, match="fallo al confirmar el reemplazo"):
+            client.post(f"{base}/reemplazar", json={**datos, "guardar_lesion": True}, headers=h)
+
+    assert client.get("/api/lesiones", headers=h).json()["lesiones"] == []
+    actual = client.get(f"/api/sesiones/{s['id']}", headers=h).json()
+    reemplazo = next(e for e in actual["ejercicios"] if e["id"] == ejercicio["id"])
+    assert reemplazo["ejercicio"]["id"] == ejercicio["ejercicio"]["id"]
+
+
+def test_crear_lesion_independiente_persiste(client, con_consentimiento):
+    h = con_consentimiento()
+    r = client.post("/api/lesiones", json={"zona": "hombro", "tipo": "aguda"}, headers=h)
+
+    assert r.status_code == 201, r.text
+    lesiones = client.get("/api/lesiones", headers=h).json()["lesiones"]
+    assert [(lesion["id"], lesion["zona"]["codigo"]) for lesion in lesiones] == [(r.json()["id"], "hombro")]
+
+
 def test_me_molesta_propone_algo_que_no_cargue_esa_zona_y_puede_guardarla(client, con_plan, db):
     h = con_plan()
     s = iniciar(client, h)
@@ -324,3 +489,90 @@ def test_sesion_olvidada_se_cierra_sola(client, con_plan, db):
     viejo = client.get(f"/api/sesiones/{s['id']}", headers=h).json()
     assert viejo["estado"] == "parcial" and viejo["cerrada_auto"] and "abierta" in viejo["resumen"]["mensaje"]
     iniciar(client, h)  # ya se puede empezar otra
+
+
+@pytest.mark.parametrize("con_sesion", [False, True], ids=["sin-sesion", "sesion-reciente"])
+def test_consulta_actual_sin_sesiones_vencidas_no_confirma(client, con_plan, monkeypatch, con_sesion):
+    h = con_plan()
+    sesion = iniciar(client, h) if con_sesion else None
+    confirmaciones = []
+    commit_original = Session.commit
+
+    def contar_commit(db):
+        confirmaciones.append(1)
+        return commit_original(db)
+
+    with monkeypatch.context() as parche:
+        parche.setattr(Session, "commit", contar_commit)
+        respuesta = client.get("/api/sesiones/actual", headers=h)
+
+    assert respuesta.status_code == 200
+    if sesion is None:
+        assert respuesta.json() is None
+    else:
+        assert respuesta.json()["id"] == sesion["id"]
+        assert respuesta.json()["estado"] == "en_curso"
+        assert respuesta.json()["cerrada_auto"] is False
+    assert confirmaciones == []
+
+
+def test_cierre_automatico_completo_persiste_con_ultima_serie(client, con_plan, db):
+    h = con_plan()
+    sesion = todas_las_series(client, h, iniciar(client, h))
+    fila = db.get(SesionEntreno, sesion["id"])
+    inicio = ahora() - timedelta(hours=7)
+    ultima = inicio + timedelta(hours=1)
+    fila.inicio_at = inicio
+    for ejercicio in fila.ejercicios:
+        for registrada in ejercicio.series_hechas:
+            registrada.completada_at = ultima
+    db.commit()
+
+    respuesta = client.get("/api/sesiones/actual", headers=h)
+
+    assert respuesta.status_code == 200 and respuesta.json() is None
+    with SessionLocal() as nueva:
+        guardada = nueva.get(SesionEntreno, sesion["id"])
+        assert guardada.estado == "completa"
+        assert guardada.cerrada_auto is True
+        assert guardada.cuenta_asistencia is True
+        assert guardada.fin_at == ultima
+
+
+def test_cierre_automatico_no_modifica_sesiones_de_otro_usuario(client, con_plan, db):
+    primera = con_plan()
+    segunda = con_plan(email="segundo@pulsegym.app")
+    sesion_primera = iniciar(client, primera)
+    sesion_segunda = iniciar(client, segunda)
+    atrasar(db, sesion_primera["id"], 7 * 60)
+    atrasar(db, sesion_segunda["id"], 7 * 60)
+
+    respuesta = client.get("/api/sesiones/actual", headers=primera)
+
+    assert respuesta.status_code == 200 and respuesta.json() is None
+    with SessionLocal() as nueva:
+        propia = nueva.get(SesionEntreno, sesion_primera["id"])
+        otra = nueva.get(SesionEntreno, sesion_segunda["id"])
+        assert (propia.estado, propia.cerrada_auto, propia.cuenta_asistencia) == ("parcial", True, False)
+        assert (otra.estado, otra.cerrada_auto, otra.cuenta_asistencia) == ("en_curso", False, False)
+        assert otra.fin_at is None
+
+
+def test_reemplazo_con_lesion_en_sesion_vencida_cierra_sin_crear_lesion(client, con_plan, db, monkeypatch):
+    h = con_plan()
+    sesion = iniciar(client, h)
+    ejercicio, base, datos = preparar_reemplazo_por_molestia(client, h, sesion)
+    atrasar(db, sesion["id"], 7 * 60)
+    preparaciones = []
+    monkeypatch.setattr(lesion_service, "_preparar_creacion", lambda *args: preparaciones.append(args))
+
+    respuesta = client.post(f"{base}/reemplazar", json={**datos, "guardar_lesion": True}, headers=h)
+
+    assert respuesta.status_code == 409
+    assert respuesta.json()["codigo"] == "sesion_terminada"
+    assert preparaciones == []
+    assert client.get("/api/lesiones", headers=h).json()["lesiones"] == []
+    with SessionLocal() as nueva:
+        guardada = nueva.get(SesionEntreno, sesion["id"])
+        assert (guardada.estado, guardada.cerrada_auto, guardada.cuenta_asistencia) == ("parcial", True, False)
+        assert next(e for e in guardada.ejercicios if e.id == ejercicio["id"]).ejercicio_id == ejercicio["ejercicio"]["id"]

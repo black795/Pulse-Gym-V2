@@ -165,6 +165,38 @@ def adaptar(db: Session, usuario: Usuario, rutina_dia: RutinaDia, gym: Gym | Non
     return sesion
 
 
+def _interpretar_elecciones_ia(para_ia: list[dict], datos: object) -> tuple[dict[str, tuple[str, str]], list[str]]:
+    """Valida las elecciones y asigna las alternativas libres respetando su orden."""
+    validas = {c["codigo"]: {o["codigo"] for o in c["opciones"]} for c in para_ia}
+    elegidos: dict[str, tuple[str, str]] = {}
+    rechazos: list[str] = []
+    tomados: set[str] = set()
+    items = datos.get("cambios") if isinstance(datos, dict) else None
+    for item in items if isinstance(items, list) else []:
+        if not isinstance(item, dict):
+            continue
+        original, reemplazo = str(item.get("original", "")), str(item.get("reemplazo", ""))
+        if original not in validas or original in elegidos:
+            continue
+        if reemplazo not in validas[original] or reemplazo in tomados:
+            rechazos.append(f"{original}: {reemplazo or '—'} no es un reemplazo válido")
+            continue
+        tomados.add(reemplazo)
+        elegidos[original] = (reemplazo, reglas.lenguaje_simple(reglas._una_frase(str(item.get("motivo", ""))) or ""))
+    # Si la IA reutilizó un reemplazo reservado por reglas para otro cambio, ese otro usa el siguiente libre.
+    for c in para_ia:
+        if c["codigo"] not in elegidos:
+            libre = next((o["codigo"] for o in c["opciones"] if o["codigo"] not in tomados), None)
+            if libre is None:
+                rechazos.append(f"{c['codigo']}: sin reemplazo libre")
+                continue
+            tomados.add(libre)
+            elegidos[c["codigo"]] = (libre, "")
+    if items is None:
+        rechazos.append("formato JSON inválido")
+    return elegidos, rechazos
+
+
 def _elegir_con_ia(db: Session, usuario: Usuario, rutina_dia: RutinaDia, gym: Gym | None, cambios: list[dict],
                    grupos: dict[str, str], fin: float) -> tuple[dict[str, tuple[str, str]], str | None]:
     """La IA elige un reemplazo de cada lista y lo explica. Lo que elija fuera de la lista se ignora (se usa el de
@@ -191,39 +223,13 @@ def _elegir_con_ia(db: Session, usuario: Usuario, rutina_dia: RutinaDia, gym: Gy
         if not isinstance(res.error, ErrorIA):
             raise res.error
         ia_uso_service.registrar(db, usuario.id, "adaptacion", modelo=cfg.ia_proveedor_efectivo,
-                                 resultado="error", detalle=str(res.error), duracion_ms=res.duracion_ms)
+                                 resultado="error", detalle=res.error.categoria, duracion_ms=res.duracion_ms)
         return {}, None
     r, ms = res.respuesta, res.duracion_ms
 
-    validas = {c["codigo"]: {o["codigo"] for o in c["opciones"]} for c in para_ia}
-    elegidos: dict[str, tuple[str, str]] = {}
-    rechazos: list[str] = []
-    tomados: set[str] = set()
-    items = r.datos.get("cambios") if isinstance(r.datos, dict) else None
-    for item in items if isinstance(items, list) else []:
-        if not isinstance(item, dict):
-            continue
-        original, reemplazo = str(item.get("original", "")), str(item.get("reemplazo", ""))
-        if original not in validas or original in elegidos:
-            continue
-        if reemplazo not in validas[original] or reemplazo in tomados:
-            rechazos.append(f"{original}: {reemplazo or '—'} no es un reemplazo válido")
-            continue
-        tomados.add(reemplazo)
-        elegidos[original] = (reemplazo, reglas.lenguaje_simple(reglas._una_frase(str(item.get("motivo", ""))) or ""))
-    # Si la IA reutilizó un reemplazo reservado por reglas para otro cambio, ese otro usa el siguiente libre.
-    for c in para_ia:
-        if c["codigo"] not in elegidos:
-            libre = next((o["codigo"] for o in c["opciones"] if o["codigo"] not in tomados), None)
-            if libre is None:
-                rechazos.append(f"{c['codigo']}: sin reemplazo libre")
-                continue
-            tomados.add(libre)
-            elegidos[c["codigo"]] = (libre, "")
-    if items is None:
-        rechazos.append("formato JSON inválido")
+    elegidos, rechazos = _interpretar_elecciones_ia(para_ia, r.datos)
     ia_uso_service.registrar(db, usuario.id, "adaptacion", modelo=r.modelo, resultado="rechazada" if rechazos else "ok",
-                             detalle="; ".join(rechazos) or None, tokens_entrada=r.tokens_entrada,
+                             detalle="RESPUESTA_INVALIDA" if rechazos else None, tokens_entrada=r.tokens_entrada,
                              tokens_salida=r.tokens_salida, duracion_ms=ms)
     return elegidos, r.modelo
 

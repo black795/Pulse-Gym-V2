@@ -1,5 +1,8 @@
 """PG-06 (mis gyms), PG-13 (máquina malograda o retirada) y PG-14 (implementos)."""
+from pathlib import Path
+
 from app.models import Gym
+from app.services import gym_service
 from tests.conftest import imagen
 
 
@@ -74,6 +77,28 @@ def test_eliminar_un_gym_borra_su_inventario_y_sus_fotos(client, gym, db):
     assert client.get(f"/api/gyms/{gid}", headers=h).status_code == 404
     assert not archivo.exists()
     assert gm["id"]
+
+
+def test_eliminar_gym_mantiene_204_y_continua_si_falla_una_foto(client, gym, db, monkeypatch):
+    from app.services import fotos_storage
+
+    h, gid = gym()
+    _agregar(client, h, gid, "PRENSA_45")
+    _agregar(client, h, gid, "SMITH")
+    archivos = [fotos_storage.ruta(f.archivo) for f in db.get(Gym, gid).fotos]
+    assert len(archivos) == 2
+    unlink = Path.unlink
+
+    def borrar_con_fallo(self, *args, **kwargs):
+        if self == archivos[0]:
+            raise PermissionError("fallo de prueba")
+        return unlink(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", borrar_con_fallo)
+    assert client.delete(f"/api/gyms/{gid}", headers=h).status_code == 204
+    assert client.get(f"/api/gyms/{gid}", headers=h).status_code == 404
+    assert archivos[0].exists()
+    assert not archivos[1].exists()
 
 
 def test_no_se_ve_ni_se_toca_el_gym_de_otro(client, gym, registrar):
@@ -158,3 +183,71 @@ def test_agregar_maquina_directo_del_catalogo(client, gym):
     # No permite duplicar si ya está activa
     r2 = client.post(f"/api/gyms/{gid}/maquinas", json={"codigo": "PENDULO"}, headers=h)
     assert r2.status_code == 409 and r2.json()["codigo"] == "ya_en_inventario"
+
+
+def test_lista_sin_gyms_no_consulta_ultimo_usado(client, registrar, monkeypatch):
+    h = registrar()
+    consultas = []
+    monkeypatch.setattr(gym_service, "_ultimo_usado_id", lambda *args: consultas.append(args))
+
+    respuesta = client.get("/api/gyms", headers=h)
+
+    assert respuesta.status_code == 200
+    assert respuesta.json() == {"gyms": [], "maximo": 5}
+    assert consultas == []
+
+
+def test_lista_sin_uso_previo_conserva_campos_y_orden(client, registrar, monkeypatch):
+    h = registrar()
+    creados = [client.post("/api/gyms", json={"nombre": nombre}, headers=h).json()
+               for nombre in ("Gym A", "Gym B", "Gym C")]
+    consultas = []
+    original = gym_service._ultimo_usado_id
+
+    def consultar(db, usuario):
+        consultas.append(1)
+        return original(db, usuario)
+
+    monkeypatch.setattr(gym_service, "_ultimo_usado_id", consultar)
+    respuesta = client.get("/api/gyms", headers=h)
+
+    assert respuesta.status_code == 200
+    assert respuesta.json() == {"gyms": creados, "maximo": 5}
+    assert all(g["ultimo_uso_at"] is None and g["es_ultimo_usado"] is False for g in creados)
+    assert consultas == []
+
+
+def test_lista_con_ultimo_uso_no_repite_consultas(client, registrar, monkeypatch):
+    h = registrar()
+    a = client.post("/api/gyms", json={"nombre": "Gym A"}, headers=h).json()
+    b = client.post("/api/gyms", json={"nombre": "Gym B"}, headers=h).json()
+    usado = client.post(f"/api/gyms/{b['id']}/usar", headers=h).json()
+    consultas = []
+    monkeypatch.setattr(gym_service, "_ultimo_usado_id", lambda *args: consultas.append(args))
+
+    respuesta = client.get("/api/gyms", headers=h)
+
+    assert respuesta.status_code == 200
+    assert respuesta.json() == {"gyms": [usado, a], "maximo": 5}
+    assert usado["es_ultimo_usado"] is True and a["es_ultimo_usado"] is False
+    assert consultas == []
+
+
+def test_detalle_consulta_ultimo_y_conserva_campos_resumen(client, gym, monkeypatch):
+    h, gid = gym()
+    resumen = client.post(f"/api/gyms/{gid}/usar", headers=h).json()
+    consultas = []
+    original = gym_service._ultimo_usado_id
+
+    def consultar(db, usuario):
+        consultas.append(1)
+        return original(db, usuario)
+
+    monkeypatch.setattr(gym_service, "_ultimo_usado_id", consultar)
+    respuesta = client.get(f"/api/gyms/{gid}", headers=h)
+
+    assert respuesta.status_code == 200
+    detalle = respuesta.json()
+    assert {campo: detalle[campo] for campo in resumen} == resumen
+    assert detalle["inventario"] == []
+    assert len(consultas) == 1

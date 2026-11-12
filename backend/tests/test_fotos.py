@@ -1,12 +1,16 @@
 """PG-07 (foto), PG-08 (reconocimiento IA), PG-09 (confirmar o elegir), PG-12 (sin duplicados), PG-48 (privacidad)."""
 import io
+import logging
 import time
+from pathlib import Path
 
 import pytest
 from PIL import Image
 
 from app.models import FotoMaquina, ReconocimientoIA
-from app.services import ia_vision
+from app.core.config import get_settings
+from app.services import fotos_storage, ia_vision
+from app.services.errores import ErrorNegocio
 from tests.conftest import imagen
 
 
@@ -111,6 +115,47 @@ def test_si_la_ia_falla_responde_503_y_se_puede_reintentar(client, gym, ia, db):
     db.expire_all()
     f = db.get(FotoMaquina, fid)
     assert f.ia_intentos == 2 and [r.intento for r in f.reconocimientos] == [2]
+
+
+@pytest.mark.parametrize("mensaje", [
+    "La IA tardó más de 15 segundos.",
+    "Se alcanzó el límite gratuito de la IA por minuto. Espera un momento y reintenta.",
+    "La IA respondió con error 503: marcador-sintetico-privado",
+    "La IA respondió algo que no se pudo entender.",
+])
+def test_error_de_foto_conserva_el_contrato_publico_actual(client, gym, ia, mensaje):
+    h, gid = gym()
+    fid = _subir(client, h, gid).json()["id"]
+    ia(ia_vision.ErrorIA(mensaje))
+
+    r = client.post(f"/api/fotos/{fid}/reconocer", headers=h)
+
+    assert r.status_code == 503
+    assert r.json() == {
+        "detail": f"No pudimos reconocer la máquina: {mensaje} Reintenta o elígela a mano del catálogo.",
+        "codigo": "ia_fallo",
+    }
+
+
+@pytest.mark.parametrize("categoria", ["TIMEOUT", "CONEXION", "LIMITE_PROVEEDOR", "RESPUESTA_INVALIDA", "ERROR_PROVEEDOR"])
+def test_error_de_foto_solo_persiste_categoria_sin_cambiar_respuesta(client, gym, ia, db, caplog, categoria):
+    from app.models import LlamadaIA
+
+    marcador = "marcador-sintetico-privado"
+    mensaje = f"Error externo: {marcador}"
+    h, gid = gym()
+    fid = _subir(client, h, gid).json()["id"]
+    ia(ia_vision.ErrorIA(mensaje, categoria=categoria))
+
+    r = client.post(f"/api/fotos/{fid}/reconocer", headers=h)
+
+    assert r.status_code == 503
+    assert r.json() == {"detail": f"No pudimos reconocer la máquina: {mensaje} Reintenta o elígela a mano del catálogo.",
+                        "codigo": "ia_fallo"}
+    db.expire_all()
+    assert db.get(FotoMaquina, fid).ia_ultimo_error == categoria
+    assert db.query(LlamadaIA).filter_by(tipo="foto").one().detalle == categoria
+    assert marcador not in caplog.text
 
 
 def test_respuesta_rara_de_la_ia_no_rompe_nada():
@@ -272,3 +317,110 @@ def test_descartar_una_foto_borra_el_archivo(client, gym, db):
     archivo = fotos_storage.ruta(db.get(FotoMaquina, fid).archivo)
     assert client.delete(f"/api/fotos/{fid}", headers=h).status_code == 204
     assert not archivo.exists()
+
+
+# ---------------- Borrado físico y diagnóstico ----------------
+@pytest.fixture()
+def almacenamiento_temporal(tmp_path, monkeypatch):
+    monkeypatch.setattr(get_settings(), "fotos_dir", str(tmp_path))
+    return tmp_path
+
+
+def test_borrar_archivo_inexistente_es_idempotente(almacenamiento_temporal):
+    assert fotos_storage.borrar(["inexistente.jpg", "inexistente.jpg"]) is None
+    assert not (almacenamiento_temporal / "inexistente.jpg").exists()
+
+
+def test_borrar_archivo_existente(almacenamiento_temporal):
+    archivo = almacenamiento_temporal / "foto.jpg"
+    archivo.write_bytes(b"foto de prueba")
+
+    assert fotos_storage.borrar(["foto.jpg"]) is None
+    assert not archivo.exists()
+
+
+def test_borrar_continua_si_una_eliminacion_falla(almacenamiento_temporal, monkeypatch):
+    bloqueado = almacenamiento_temporal / "bloqueado.jpg"
+    otro = almacenamiento_temporal / "otro.jpg"
+    bloqueado.write_bytes(b"foto uno")
+    otro.write_bytes(b"foto dos")
+    unlink = Path.unlink
+
+    def borrar_con_fallo(self, *args, **kwargs):
+        if self == bloqueado:
+            raise PermissionError("fallo de prueba")
+        return unlink(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", borrar_con_fallo)
+    assert fotos_storage.borrar(["bloqueado.jpg", "otro.jpg"]) is None
+    assert bloqueado.exists()
+    assert not otro.exists()
+
+
+@pytest.mark.parametrize(
+    ("error", "categoria"),
+    [(PermissionError, "PERMISO"), (OSError, "IO"), (ErrorNegocio, "RUTA_RECHAZADA")],
+)
+def test_borrar_registra_categoria_sin_datos_sensibles(almacenamiento_temporal, monkeypatch, caplog, error, categoria):
+    datos_sinteticos = "/ruta-interna-test/archivo-privado.jpg id-persona-731 persona@example.test https://ejemplo.test/foto?firma=valor-prueba"
+
+    def fallar(_relativa):
+        raise error(datos_sinteticos)
+
+    monkeypatch.setattr(fotos_storage, "ruta", fallar)
+    with caplog.at_level(logging.WARNING, logger=fotos_storage.__name__):
+        assert fotos_storage.borrar(["archivo-privado.jpg"]) is None
+
+    registros = [r for r in caplog.records if r.name == fotos_storage.__name__]
+    assert len(registros) == 1
+    assert registros[0].getMessage() == f"No se pudo borrar una foto: {categoria}"
+    assert registros[0].exc_info is None and registros[0].stack_info is None
+    for dato in ("/ruta-interna-test/", "archivo-privado.jpg", "id-persona-731", "persona@example.test", "https://ejemplo.test", "firma=valor-prueba", datos_sinteticos):
+        assert dato not in caplog.text
+
+
+def test_borrar_rechaza_ruta_fuera_del_almacenamiento(almacenamiento_temporal, caplog):
+    with caplog.at_level(logging.WARNING, logger=fotos_storage.__name__):
+        assert fotos_storage.borrar(["../fuera.jpg"]) is None
+    assert [r.getMessage() for r in caplog.records if r.name == fotos_storage.__name__] == [
+        "No se pudo borrar una foto: RUTA_RECHAZADA"
+    ]
+    assert "fuera.jpg" not in caplog.text
+
+
+def test_descartar_foto_mantiene_204_si_falla_borrado_fisico(client, gym, db, monkeypatch):
+    h, gid = gym()
+    fid = _subir(client, h, gid).json()["id"]
+    archivo = fotos_storage.ruta(db.get(FotoMaquina, fid).archivo)
+    unlink = Path.unlink
+
+    def borrar_con_fallo(self, *args, **kwargs):
+        if self == archivo:
+            raise PermissionError("fallo de prueba")
+        return unlink(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", borrar_con_fallo)
+    r = client.delete(f"/api/fotos/{fid}", headers=h)
+    assert r.status_code == 204
+    assert archivo.exists()
+    db.expire_all()
+    assert db.get(FotoMaquina, fid) is None
+
+
+def test_eliminar_cuenta_mantiene_204_si_falla_borrado_fisico(client, gym, db, monkeypatch):
+    h, gid = gym()
+    fid = _subir(client, h, gid).json()["id"]
+    archivo = fotos_storage.ruta(db.get(FotoMaquina, fid).archivo)
+    unlink = Path.unlink
+
+    def borrar_con_fallo(self, *args, **kwargs):
+        if self == archivo:
+            raise PermissionError("fallo de prueba")
+        return unlink(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", borrar_con_fallo)
+    assert client.delete("/api/cuenta", headers=h).status_code == 204
+    assert archivo.exists()
+    db.expire_all()
+    assert db.get(FotoMaquina, fid) is None
+    assert client.get("/api/auth/me", headers=h).status_code == 401

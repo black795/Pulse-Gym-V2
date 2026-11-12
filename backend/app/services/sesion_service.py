@@ -26,7 +26,11 @@ TEXTO_MOTIVO = {"maquina_ocupada": "La máquina estaba ocupada", "molestia_dolor
 
 # ---------------- Consultas ----------------
 def _cerrar_olvidadas(db: Session, usuario: Usuario) -> None:
-    """Una sesión abierta hace más de N horas se cierra sola con lo que se registró (no queda colgada para siempre)."""
+    """Cierra y califica las sesiones vencidas del usuario.
+
+    Si encuentra alguna, confirma la transacción de db, incluidos otros cambios pendientes.
+    Si no encuentra sesiones vencidas, no hace commit.
+    """
     limite = ahora() - timedelta(hours=get_settings().sesion_horas_max)
     viejas = db.scalars(select(SesionEntreno).where(
         SesionEntreno.usuario_id == usuario.id, SesionEntreno.estado == "en_curso", SesionEntreno.inicio_at < limite,
@@ -40,6 +44,7 @@ def _cerrar_olvidadas(db: Session, usuario: Usuario) -> None:
 
 
 def en_curso(db: Session, usuario: Usuario) -> SesionEntreno | None:
+    """Devuelve la sesión actual; antes puede cerrar vencidas y confirmar la transacción."""
     _cerrar_olvidadas(db, usuario)
     return db.scalar(select(SesionEntreno).where(
         SesionEntreno.usuario_id == usuario.id, SesionEntreno.estado == "en_curso",
@@ -54,6 +59,7 @@ def obtener(db: Session, usuario: Usuario, sesion_id: int) -> SesionEntreno:
 
 
 def _en_curso_o_error(db: Session, usuario: Usuario, sesion_id: int) -> SesionEntreno:
+    """Comprueba propiedad y estado; puede cerrar vencidas y confirmar antes de lanzar un error."""
     s = obtener(db, usuario, sesion_id)
     _cerrar_olvidadas(db, usuario)
     if s.estado != "en_curso":
@@ -252,38 +258,42 @@ def reemplazar(db: Session, usuario: Usuario, sesion_id: int, se_id: int, datos:
         raise ErrorNegocio("Ese ejercicio no es un reemplazo válido aquí.", 400, "reemplazo_invalido")
     nuevo = db.get(Ejercicio, opcion.id)
 
-    if datos.motivo == "molestia_dolor" and datos.guardar_lesion:
-        # PG-22: se guarda como lesión activa (pide consentimiento): el próximo plan ya la tiene en cuenta (PG-20).
-        if not any(l.zona.codigo == datos.zona and l.estado in lesion_service.ESTADOS_QUE_LIMITAN for l in usuario.lesiones):
-            lesion_service.crear(db, usuario, LesionIn(
-                zona=datos.zona, tipo="aguda", duele_con_carga=True, estado="activa",
-                descripcion=f"Molestia durante {se.ejercicio.nombre.lower()} (registrada en una sesión).",
-            ))
+    try:
+        if datos.motivo == "molestia_dolor" and datos.guardar_lesion:
+            # La lesión se confirma junto con el reemplazo, no antes.
+            if not any(l.zona.codigo == datos.zona and l.estado in lesion_service.ESTADOS_QUE_LIMITAN for l in usuario.lesiones):
+                lesion_service._preparar_creacion(db, usuario, LesionIn(
+                    zona=datos.zona, tipo="aguda", duele_con_carga=True, estado="activa",
+                    descripcion=f"Molestia durante {se.ejercicio.nombre.lower()} (registrada en una sesión).",
+                ))
 
-    series, rmin, rmax, descanso = se.series, se.reps_min, se.reps_max, se.descanso_seg
-    if nuevo.multiarticular != se.ejercicio.multiarticular and s.rutina_dia_id:
-        rutina = db.get(Rutina, db.get(RutinaDia, s.rutina_dia_id).rutina_id)
-        if usuario.objetivo and usuario.objetivo.nivel:
-            series, rmin, rmax, descanso = reglas.prescripcion(rutina.objetivo_tipo, usuario.objetivo.nivel, nuevo.multiarticular)
-    hechas = len(se.series_hechas)
-    nota = f"{TEXTO_MOTIVO[datos.motivo]}: {se.ejercicio.nombre}. Solo cambia hoy; tu plan semanal sigue igual."
-    if hechas == 0:
-        destino = se
-        destino.reemplaza_id = se.reemplaza_id or se.ejercicio_id
-    else:
-        se.cerrado = True
-        se.series = hechas
-        for otro in s.ejercicios:
-            if otro.orden > se.orden:
-                otro.orden += 1
-        destino = SesionEjercicio(orden=se.orden + 1, rutina_ejercicio_id=se.rutina_ejercicio_id, reemplaza_id=se.ejercicio_id)
-        s.ejercicios.append(destino)
-        series = max(1, series - hechas)
-    destino.ejercicio_id, destino.ejercicio = nuevo.id, nuevo
-    destino.gym_maquina_id = _gym_maquina_id(_gym(db, s), nuevo)
-    destino.series, destino.reps_min, destino.reps_max, destino.descanso_seg = series, rmin, rmax, descanso
-    destino.motivo, destino.nota, destino.precaucion = datos.motivo, nota, opcion.precaucion
-    db.commit()
+        series, rmin, rmax, descanso = se.series, se.reps_min, se.reps_max, se.descanso_seg
+        if nuevo.multiarticular != se.ejercicio.multiarticular and s.rutina_dia_id:
+            rutina = db.get(Rutina, db.get(RutinaDia, s.rutina_dia_id).rutina_id)
+            if usuario.objetivo and usuario.objetivo.nivel:
+                series, rmin, rmax, descanso = reglas.prescripcion(rutina.objetivo_tipo, usuario.objetivo.nivel, nuevo.multiarticular)
+        hechas = len(se.series_hechas)
+        nota = f"{TEXTO_MOTIVO[datos.motivo]}: {se.ejercicio.nombre}. Solo cambia hoy; tu plan semanal sigue igual."
+        if hechas == 0:
+            destino = se
+            destino.reemplaza_id = se.reemplaza_id or se.ejercicio_id
+        else:
+            se.cerrado = True
+            se.series = hechas
+            for otro in s.ejercicios:
+                if otro.orden > se.orden:
+                    otro.orden += 1
+            destino = SesionEjercicio(orden=se.orden + 1, rutina_ejercicio_id=se.rutina_ejercicio_id, reemplaza_id=se.ejercicio_id)
+            s.ejercicios.append(destino)
+            series = max(1, series - hechas)
+        destino.ejercicio_id, destino.ejercicio = nuevo.id, nuevo
+        destino.gym_maquina_id = _gym_maquina_id(_gym(db, s), nuevo)
+        destino.series, destino.reps_min, destino.reps_max, destino.descanso_seg = series, rmin, rmax, descanso
+        destino.motivo, destino.nota, destino.precaucion = datos.motivo, nota, opcion.precaucion
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     db.refresh(s)
     return s
 

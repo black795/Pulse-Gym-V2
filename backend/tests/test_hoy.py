@@ -5,7 +5,7 @@ from app.core.config import get_settings
 from app.db.base import ahora
 from app.models import Ejercicio, LlamadaIA, MaquinaCatalogo
 from app.models.plan import DIAS_SEMANA
-from app.services import ia_uso_service, ia_vision, plan_ia
+from app.services import adaptacion_service, ia_cliente, ia_uso_service, ia_vision, plan_ia
 from tests.conftest import imagen
 
 HOY = DIAS_SEMANA[ahora().date().weekday()]
@@ -163,7 +163,7 @@ def test_la_ia_solo_puede_elegir_entre_los_reemplazos_validos(client, con_plan, 
     assert all(e["ejercicio"]["codigo"] != "PRENSA_45" for e in s["ejercicios"])
     db.expire_all()
     llamada = db.query(LlamadaIA).filter_by(tipo="adaptacion").one()
-    assert llamada.resultado == "rechazada" and "PRENSA_45" in llamada.detalle
+    assert llamada.resultado == "rechazada" and llamada.detalle == "RESPUESTA_INVALIDA"
 
 
 def test_la_adaptacion_respeta_las_lesiones(client, con_plan, db):
@@ -194,6 +194,38 @@ def test_si_la_ia_de_adaptacion_falla_se_adapta_con_reglas(client, con_plan, mon
     assert s["origen"] == "reglas" and s["ejercicios"]
 
 
+def test_error_de_adaptacion_sanitiza_diagnostico_y_conserva_fallback(client, con_plan, db, monkeypatch, caplog):
+    marcador = "marcador-sintetico-privado"
+
+    def falla(*_):
+        raise ia_vision.ErrorIA(marcador, categoria="CONEXION")
+
+    monkeypatch.setitem(plan_ia.PROVEEDORES_ADAPTACION, "simulada", falla)
+    h = con_plan()
+    nuevo_gym(client, h)
+    sesion = hoy(client, h)["sesion"]
+
+    assert sesion["origen"] == "reglas" and sesion["ejercicios"]
+    db.expire_all()
+    llamada = db.query(LlamadaIA).filter_by(tipo="adaptacion").one()
+    assert llamada.resultado == "error" and llamada.detalle == "CONEXION"
+    assert marcador not in caplog.text
+
+
+def test_rechazo_de_adaptacion_no_persiste_texto_externo(client, con_plan, db, monkeypatch):
+    marcador = "marcador-sintetico-privado"
+    monkeypatch.setitem(plan_ia.PROVEEDORES_ADAPTACION, "simulada", lambda enfoque, gym, cambios, limite: (
+        "modelo-prueba", {"cambios": [{"original": c["codigo"], "reemplazo": marcador, "motivo": "x."} for c in cambios]},
+    ))
+    h = con_plan()
+    nuevo_gym(client, h)
+    assert hoy(client, h)["sesion"]["ejercicios"]
+    db.expire_all()
+    llamada = db.query(LlamadaIA).filter_by(tipo="adaptacion").one()
+    assert llamada.resultado == "rechazada" and llamada.detalle == "RESPUESTA_INVALIDA"
+    assert marcador not in llamada.detalle
+
+
 # ---------------- PG-49: fotos ----------------
 def test_limite_diario_de_fotos_con_ia(client, gym, cfg, db):
     cfg(ia_limite_fotos_dia=2)
@@ -214,7 +246,7 @@ def test_limite_diario_de_fotos_con_ia(client, gym, cfg, db):
 
 def test_cada_reconocimiento_queda_registrado_aunque_falle(client, gym, db, monkeypatch):
     def falla(*_):
-        raise ia_vision.ErrorIA("La IA tardó más de 15 segundos.")
+        raise ia_vision.ErrorIA("La IA tardó más de 15 segundos.", categoria="TIMEOUT")
 
     monkeypatch.setitem(ia_vision.PROVEEDORES, "simulada", falla)
     h, gid = gym()
@@ -222,7 +254,7 @@ def test_cada_reconocimiento_queda_registrado_aunque_falle(client, gym, db, monk
     assert client.post(f"/api/fotos/{fid}/reconocer", headers=h).status_code == 503
     db.expire_all()
     llamada = db.query(LlamadaIA).filter_by(tipo="foto").one()
-    assert llamada.resultado == "error" and "15 segundos" in llamada.detalle
+    assert llamada.resultado == "error" and llamada.detalle == "TIMEOUT"
 
 
 def test_los_reemplazos_del_catalogo_nunca_son_de_otra_maquina_inactiva(client, con_plan, db):
@@ -239,3 +271,98 @@ def test_los_reemplazos_del_catalogo_nunca_son_de_otra_maquina_inactiva(client, 
     db.commit()
     s = hoy(client, h)["sesion"]
     assert ej.codigo not in {e["ejercicio"]["codigo"] for e in s["ejercicios"]}
+
+
+@pytest.mark.parametrize(
+    ("cambios", "respuesta", "esperado", "resultado", "detalle"),
+    [
+        pytest.param(
+            [("A", ["X", "Y"])], {"cambios": [{"original": "A", "reemplazo": "Y", "motivo": "  Correcto. Otra frase."}]},
+            {"A": ("Y", "Correcto.")}, "ok", None, id="eleccion-valida-y-frase",
+        ),
+        pytest.param(
+            [("A", ["X"])], {"cambios": [{"original": "DESCONOCIDO", "reemplazo": "X"}]},
+            {"A": ("X", "")}, "ok", None, id="original-desconocido",
+        ),
+        pytest.param(
+            [("A", ["X", "Y"])], {"cambios": [{"original": "A", "reemplazo": "X"}, {"original": "A", "reemplazo": "Y"}]},
+            {"A": ("X", "")}, "ok", None, id="original-repetido",
+        ),
+        pytest.param(
+            [("A", ["X"])], {"cambios": [{"original": "A", "reemplazo": "Z"}]},
+            {"A": ("X", "")}, "rechazada", "RESPUESTA_INVALIDA", id="opcion-invalida",
+        ),
+        pytest.param(
+            [("A", ["X", "Y"]), ("B", ["X", "Z"])],
+            {"cambios": [{"original": "A", "reemplazo": "X"}, {"original": "B", "reemplazo": "X"}]},
+            {"A": ("X", ""), "B": ("Z", "")}, "rechazada", "RESPUESTA_INVALIDA", id="ocupada-siguiente-libre",
+        ),
+        pytest.param(
+            [("A", ["X"]), ("B", ["X"])], {"cambios": [{"original": "A", "reemplazo": "X"}]},
+            {"A": ("X", "")}, "rechazada", "RESPUESTA_INVALIDA", id="sin-opciones-libres",
+        ),
+        pytest.param(
+            [("A", ["X"])], {"otro": []},
+            {"A": ("X", "")}, "rechazada", "RESPUESTA_INVALIDA", id="campo-ausente",
+        ),
+        pytest.param(
+            [("A", ["X"])], {"cambios": "no-es-lista"},
+            {"A": ("X", "")}, "ok", None, id="campo-no-lista",
+        ),
+        pytest.param(
+            [("A", ["X"])], {"cambios": [None, 42]},
+            {"A": ("X", "")}, "ok", None, id="elementos-no-diccionario",
+        ),
+        pytest.param(
+            [("A", ["X", "Y"]), ("B", ["X", "Z"])],
+            {"cambios": [{"original": "B", "reemplazo": "X"}]},
+            {"B": ("X", ""), "A": ("Y", "")}, "ok", None, id="prioridad-respuesta-y-orden-opciones",
+        ),
+    ],
+)
+def test_interpretacion_de_elecciones_ia(monkeypatch, cambios, respuesta, esperado, resultado, detalle):
+    from types import SimpleNamespace
+
+    filas = [
+        {"ejercicio": SimpleNamespace(codigo=codigo, nombre=codigo, musculo_principal=None), "motivo": "motivo",
+         "opciones": [SimpleNamespace(codigo=o, nombre=o, categoria_equipo="sin_equipo", precaucion=False) for o in opciones]}
+        for codigo, opciones in cambios
+    ]
+    registro = []
+    monkeypatch.setattr(ia_cliente, "carrera", lambda *_: (
+        {"adaptacion": ia_cliente.Resultado(ia_cliente.RespuestaIA("modelo-prueba", respuesta), None, 7)}, 0
+    ))
+    monkeypatch.setattr(ia_uso_service, "registrar", lambda *args, **kwargs: registro.append(kwargs))
+
+    elegidos, modelo = adaptacion_service._elegir_con_ia(
+        None, SimpleNamespace(id=1), SimpleNamespace(enfoque="prueba"), None, filas, {}, 100.0
+    )
+
+    assert list(elegidos.items()) == list(esperado.items())
+    assert modelo == "modelo-prueba"
+    assert len(registro) == 1
+    assert registro[0]["resultado"] == resultado
+    assert registro[0]["detalle"] == detalle
+
+
+@pytest.mark.parametrize(
+    ("cambios", "respuesta", "esperado", "rechazos"),
+    [
+        pytest.param(
+            [{"codigo": "A", "opciones": [{"codigo": "X"}]}],
+            {"cambios": [{"original": "A", "reemplazo": ""}]},
+            {"A": ("X", "")}, ["A: — no es un reemplazo válido"], id="motivo-opcion-vacia",
+        ),
+        pytest.param(
+            [{"codigo": "A", "opciones": [{"codigo": "X"}]}, {"codigo": "B", "opciones": [{"codigo": "X"}]}],
+            {"cambios": [{"original": "A", "reemplazo": "X"}, {"original": "B", "reemplazo": "X"}]},
+            {"A": ("X", "")}, ["B: X no es un reemplazo válido", "B: sin reemplazo libre"], id="motivos-en-orden",
+        ),
+        pytest.param(
+            [{"codigo": "A", "opciones": [{"codigo": "X"}]}], None,
+            {"A": ("X", "")}, ["formato JSON inválido"], id="motivo-formato",
+        ),
+    ],
+)
+def test_motivos_de_rechazo_de_elecciones_ia(cambios, respuesta, esperado, rechazos):
+    assert adaptacion_service._interpretar_elecciones_ia(cambios, respuesta) == (esperado, rechazos)

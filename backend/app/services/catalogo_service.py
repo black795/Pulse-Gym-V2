@@ -1,10 +1,10 @@
 """Consultas del catálogo y búsqueda de alternativas (PG-15, PG-16, PG-17)."""
-import unicodedata
 from collections import Counter
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.texto import sin_tildes as _sin_tildes
 from app.models import Ejercicio, EjercicioMaquina, EjercicioMusculo, GrupoMuscular, MaquinaCatalogo
 from app.schemas.catalogo import (
     AlternativaOut, ContraindicacionOut, EjercicioFichaOut, EjercicioResumenOut, MaquinaOut, MaquinaResumenOut,
@@ -35,10 +35,6 @@ def musculos_principales(db: Session) -> dict[int, GrupoMuscular]:
         grupos[grupo.id] = grupo
     # En empate gana el grupo con id menor, para que el resultado sea siempre el mismo.
     return {m: grupos[min(c.items(), key=lambda t: (-t[1], t[0]))[0]] for m, c in conteo.items()}
-
-
-def _sin_tildes(t: str) -> str:
-    return "".join(ch for ch in unicodedata.normalize("NFD", t.lower()) if unicodedata.category(ch) != "Mn")
 
 
 def buscar_maquinas(db: Session, *, q: str | None = None, grupo: str | None = None) -> list[MaquinaCatalogo]:

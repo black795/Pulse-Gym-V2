@@ -9,9 +9,9 @@ Los esquemas y rangos son una propuesta inicial: los debe validar un entrenador 
 """
 import itertools
 import re
-import unicodedata
 from dataclasses import dataclass, field
 
+from app.core.texto import sin_tildes
 from app.models.plan import DIAS_SEMANA
 
 NOMBRES_DIAS = {
@@ -150,10 +150,6 @@ class PlanPropuesto:
 
 
 # ---------------- Utilidades ----------------
-def sin_tildes(t: str) -> str:
-    return "".join(ch for ch in unicodedata.normalize("NFD", t.lower()) if unicodedata.category(ch) != "Mn")
-
-
 def ordenar_dias(dias: list[str]) -> list[str]:
     return sorted(set(dias), key=DIAS_SEMANA.index)
 

@@ -131,6 +131,21 @@ def _pedidos(ctx: reglas.Contexto, base: reglas.PlanPropuesto) -> list[plan_ia.P
     return pedidos
 
 
+def _combinar_plan_ia(
+    base: reglas.PlanPropuesto, dias_ia: dict[str, reglas.DiaPlan], general: str | None, modelo: str | None, rondas: int,
+) -> ResultadoIA:
+    """Combina los días aceptados con el plan de reglas, sin alterar su orden."""
+    if not dias_ia:
+        return ResultadoIA(None, "reglas", None, rondas)
+    completo = len(dias_ia) == len(base.dias)
+    explicacion = general or base.explicacion
+    if not completo:
+        explicacion += " Algunos días los armamos con nuestras reglas porque la IA no respondió a tiempo."
+    plan = reglas.PlanPropuesto(explicacion=explicacion, dias=[dias_ia.get(d.dia, d) for d in base.dias], avisos=base.avisos)
+    return ResultadoIA(plan, "ia" if completo else "mixto", modelo, rondas)
+
+
+
 def _con_ia(db: Session, usuario: Usuario, ctx: reglas.Contexto, fin: float) -> ResultadoIA:
     """Pide el plan a la IA EN PARALELO (explicación general + un pedido por día) y valida cada respuesta.
     Lo rechazado se vuelve a pedir explicando por qué (máximo 2 reintentos, PG-26) y cada rechazo queda registrado.
@@ -162,7 +177,7 @@ def _con_ia(db: Session, usuario: Usuario, ctx: reglas.Contexto, fin: float) -> 
                 if not isinstance(error, ErrorIA):
                     raise error
                 ia_uso_service.registrar(db, usuario.id, "plan", modelo=cfg.ia_proveedor_efectivo, resultado="error",
-                                         detalle=f"{pedido.clave}: {error}", duracion_ms=ms)
+                                         detalle=f"{pedido.clave}: {error.categoria}", duracion_ms=ms)
                 continue
             errores: list[str] = []
             correcciones: list[str] = []
@@ -178,7 +193,8 @@ def _con_ia(db: Session, usuario: Usuario, ctx: reglas.Contexto, fin: float) -> 
                 errores.append(str(e))
             ia_uso_service.registrar(
                 db, usuario.id, "plan", modelo=r.modelo, resultado="rechazada" if errores else "ok",
-                detalle=f"{pedido.clave}: " + "; ".join(errores or correcciones) if errores or correcciones else pedido.clave,
+                detalle=(f"{pedido.clave}: RESPUESTA_INVALIDA" if errores else
+                         f"{pedido.clave}: " + "; ".join(correcciones) if correcciones else pedido.clave),
                 tokens_entrada=r.tokens_entrada, tokens_salida=r.tokens_salida, duracion_ms=ms,
             )
             if errores:  # PG-26: se vuelve a pedir diciéndole a la IA qué estuvo mal
@@ -192,15 +208,7 @@ def _con_ia(db: Session, usuario: Usuario, ctx: reglas.Contexto, fin: float) -> 
                 dias_ia[pedido.dia] = dia
         pendientes = siguientes
 
-    if not dias_ia:
-        return ResultadoIA(None, "reglas", None, rondas)
-    completo = len(dias_ia) == len(base.dias)
-    explicacion = general or base.explicacion
-    if not completo:
-        explicacion += " Algunos días los armamos con nuestras reglas porque la IA no respondió a tiempo."
-    plan = reglas.PlanPropuesto(explicacion=explicacion, dias=[dias_ia.get(d.dia, d) for d in base.dias], avisos=base.avisos)
-    return ResultadoIA(plan, "ia" if completo else "mixto", modelo, rondas)
-
+    return _combinar_plan_ia(base, dias_ia, general, modelo, rondas)
 
 def generar(db: Session, usuario: Usuario, dias: list[str] | None, motivo: str) -> Rutina:
     """motivo: primera | regenerar (lo pide el usuario, máx. 3 al día) | lesion (automático, PG-20)."""
@@ -233,7 +241,7 @@ def generar(db: Session, usuario: Usuario, dias: list[str] | None, motivo: str) 
                 plan, origen, modelo = revision.plan, r.origen, r.modelo
             else:
                 ia_uso_service.registrar(db, usuario.id, "plan", modelo=r.modelo or "?", resultado="rechazada",
-                                         detalle="semana: " + "; ".join(revision.errores))
+                                         detalle="semana: RESPUESTA_INVALIDA")
         if plan is None:
             extra = "La IA no logró un plan válido a tiempo, así que lo armamos con nuestras reglas de entrenamiento: es igual de seguro."
     else:
