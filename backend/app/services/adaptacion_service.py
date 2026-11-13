@@ -18,7 +18,8 @@ from app.db.base import ahora
 from app.models import AdaptacionDia, Ejercicio, Gym, Rutina, RutinaDia, Usuario
 from app.models.plan import DIAS_SEMANA
 from app.schemas.plan import EjercicioHoyOut, GymOpcionOut, HoyOut, OmitidoOut, SesionHoyOut, SiguienteDiaOut
-from app.services import catalogo_service, gym_service, ia_cliente, ia_uso_service, lesion_service, plan_ia, plan_service
+from app.services import catalogo_service, gym_service, ia_cliente, ia_uso_service, lesion_service, pesos_service, plan_ia
+from app.services import plan_service
 from app.services import plan_reglas as reglas
 from app.services.errores import ErrorNegocio
 from app.services.ia_cliente import ErrorIA
@@ -259,4 +260,16 @@ def hoy(db: Session, usuario: Usuario, *, gym_id: int | None, dia: str | None, f
         gym = gyms[0] if gyms else None
     else:
         gym = gym_service.obtener(db, usuario, gym_id)
-    return HoyOut(**comun, requiere_elegir_gym=False, sesion=adaptar(db, usuario, por_dia[elegido], gym, fecha))
+    sesion = adaptar(db, usuario, por_dia[elegido], gym, fecha)
+    _con_pesos(db, usuario, sesion, fecha)
+    return HoyOut(**comun, requiere_elegir_gym=False, sesion=sesion)
+
+
+def _con_pesos(db: Session, usuario: Usuario, sesion: SesionHoyOut, fecha: date) -> None:
+    """Sprint 5 (PG-41/PG-42): el peso sugerido de cada ejercicio. Se calcula cada vez (depende de tu historial),
+    por eso no se guarda junto con la adaptación."""
+    pedidos = [pesos_service.Pedido(db.get(Ejercicio, x.ejercicio.id), x.reps_min, x.reps_max, x.precaucion)
+               for x in sesion.ejercicios]
+    pesos = pesos_service.sugerir(db, usuario, pedidos, fecha)
+    for x in sesion.ejercicios:
+        x.peso_sugerido = pesos.get(x.ejercicio.id)

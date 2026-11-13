@@ -77,9 +77,14 @@ export type DiaSemana = 'lunes' | 'martes' | 'miercoles' | 'jueves' | 'viernes' 
 export interface EjercicioBreve {
   id: number; codigo: string; nombre: string; musculo_principal: string | null; categoria_equipo: string; maquinas: string[];
 }
+// Sprint 5 (PG-41/PG-42): el peso que conviene usar (estimado la primera vez; después, según tu historial).
+export interface PesoSugerido {
+  peso_kg: number; reps: number; tipo: 'inicial' | 'subir' | 'mantener' | 'bajar' | 'retorno';
+  origen: 'historial' | 'ia' | 'reglas'; texto: string;
+}
 export interface RutinaEjercicio {
   id: number; orden: number; ejercicio: EjercicioBreve; series: number; reps_min: number; reps_max: number;
-  descanso_seg: number; motivo: string; precaucion: boolean;
+  descanso_seg: number; motivo: string; precaucion: boolean; peso_sugerido?: PesoSugerido | null;
 }
 export interface RutinaDia {
   id: number; dia: DiaSemana; dia_nombre: string; enfoque: string; grupos: string[]; explicacion: string;
@@ -100,6 +105,7 @@ export interface EjercicioHoy {
   orden: number; ejercicio: EjercicioBreve; original: EjercicioBreve | null; cambio: boolean;
   motivo_cambio: string | null; por_que_reemplazo: string | null; precaucion: boolean;
   series: number; reps_min: number; reps_max: number; descanso_seg: number; rutina_ejercicio_id?: number | null;
+  peso_sugerido?: PesoSugerido | null;
 }
 export interface SesionHoy {
   dia: DiaSemana; dia_nombre: string; enfoque: string; gym_id: number | null; gym_nombre: string | null;
@@ -121,15 +127,16 @@ export interface SesionEjercicio {
   id: number; orden: number; ejercicio: EjercicioBreve; reemplaza: EjercicioBreve | null; motivo: string; nota: string | null;
   precaucion: boolean; series: number; reps_min: number; reps_max: number; descanso_seg: number; cerrado: boolean;
   hechas: SerieHecha[]; anterior: { numero: number; peso_kg: number; repeticiones: number }[];
-  mejor: { peso_kg: number; repeticiones: number } | null;
+  mejor: { peso_kg: number; repeticiones: number } | null; sugerencia?: PesoSugerido | null;
 }
+export type EstadoTerminada = 'completa' | 'parcial' | 'manual';
 export interface ResumenSesion {
-  estado: 'completa' | 'parcial'; cuenta_asistencia: boolean; duracion_seg: number; duracion_estimada_seg: number;
+  estado: EstadoTerminada; cuenta_asistencia: boolean; duracion_seg: number; duracion_estimada_seg: number;
   series_hechas: number; series_planeadas: number; porcentaje: number; volumen_kg: number;
   records: { ejercicio: string; peso_kg: number; repeticiones: number }[]; mensaje: string;
 }
 export interface SesionVivo {
-  id: number; estado: 'en_curso' | 'completa' | 'parcial'; fecha: string; dia: DiaSemana; enfoque: string;
+  id: number; estado: 'en_curso' | EstadoTerminada; fecha: string; dia: DiaSemana; enfoque: string;
   gym_id: number | null; gym_nombre: string | null; inicio_at: string; fin_at: string | null; ahora: string;
   duracion_estimada_seg: number; series_hechas: number; series_planeadas: number; volumen_kg: number;
   cerrada_auto: boolean; ejercicios: SesionEjercicio[]; resumen: ResumenSesion | null;
@@ -137,4 +144,31 @@ export interface SesionVivo {
 export interface Alternativa extends EjercicioResumen { nivel_busqueda: number; precaucion: boolean }
 export interface OpcionesReemplazo {
   motivo: MotivoReemplazo; zona: string | null; opciones: Alternativa[]; puede_guardar_lesion: boolean; aviso: string | null;
+}
+
+// ---------------- Sprint 5: progreso ----------------
+export interface Constancia {
+  racha_actual: number; mejor_racha: number; entreno_hoy: boolean; sesiones_semana: number; sesiones_mes: number;
+  ultima_sesion: string | null;
+}
+export interface SesionHistorial {
+  id: number; fecha: string; dia: DiaSemana; enfoque: string; gym_nombre: string | null; estado: EstadoTerminada;
+  cuenta_asistencia: boolean; duracion_seg: number; series_hechas: number; series_planeadas: number; volumen_kg: number;
+  records: number;
+}
+export interface HistorialSesiones { total: number; pagina: number; por_pagina: number; sesiones: SesionHistorial[] }
+export interface Marca { peso_kg: number; repeticiones: number }
+export interface EjercicioUsado {
+  ejercicio: EjercicioBreve; veces: number; primera_fecha: string; ultima_fecha: string; ultima: Marca[];
+  peso_inicial_kg: number; peso_actual_kg: number; mejor: Marca; sugerencia: PesoSugerido | null;
+}
+export interface Alerta { tipo: 'retorno' | 'estancamiento'; titulo: string; texto: string; ejercicio_id: number | null }
+export interface VezEjercicio {
+  sesion_id: number; fecha: string; gym_nombre: string | null; peso_max_kg: number; reps_con_peso_max: number;
+  volumen_kg: number; record: boolean; series: { numero: number; peso_kg: number; repeticiones: number; es_record: boolean }[];
+}
+export interface EjercicioDetalle extends EjercicioUsado { historial: VezEjercicio[]; estancamiento: Alerta | null }
+export interface SesionPasadaEnvio {
+  fecha: string; dia: DiaSemana; gym_id?: number;
+  ejercicios: { ejercicio_id: number; series: { peso_kg: number; repeticiones: number }[] }[];
 }

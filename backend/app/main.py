@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app import models  # noqa: F401  (registra las tablas)
-from app.api.routes import auth, catalogo, fotos, gyms, lesiones, perfil, plan, sesiones
+from app.api.routes import auth, catalogo, fotos, gyms, lesiones, perfil, plan, progreso, sesiones
 from app.core.config import get_settings
 from app.core.errores_validacion import manejar_validacion
 from app.db.base import Base
@@ -48,7 +48,7 @@ async def manejar_error_negocio(_: Request, exc: ErrorNegocio):
 app.add_exception_handler(RequestValidationError, manejar_validacion)
 
 for r in (auth.router, perfil.router, lesiones.router, catalogo.router, gyms.router, fotos.router, plan.router,
-          sesiones.router):
+          sesiones.router, progreso.router):
     app.include_router(r, prefix="/api")
 
 

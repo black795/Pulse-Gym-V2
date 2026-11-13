@@ -1,6 +1,6 @@
 import { api, subirArchivo } from './http';
 import type {
-  Confirmacion, ConsentimientoEstado, DiaSemana, EjercicioFicha, EjercicioResumen, EstadoMaquina, Foto, GrupoMuscular, GymDetalle, GymMaquina, GymResumen,
+  Alerta, Confirmacion, Constancia, ConsentimientoEstado, DiaSemana, EjercicioDetalle, EjercicioUsado, HistorialSesiones, SesionPasadaEnvio, EjercicioFicha, EjercicioResumen, EstadoMaquina, Foto, GrupoMuscular, GymDetalle, GymMaquina, GymResumen,
   GymsRespuesta, Hoy, Lesion, LesionesRespuesta, MaquinaCatalogo, Medicion, MotivoReemplazo, OpcionesReemplazo, Perfil,
   PerfilEnvio, PlanEstado, Reconocimiento, Sesion, SesionVivo, TextoConsentimiento, Usuario, Zona,
 } from './tipos';
@@ -114,4 +114,15 @@ export const sesionesApi = {
   reemplazar: (id: number, seId: number, d: { ejercicio_id: number; motivo: MotivoReemplazo; zona?: string; guardar_lesion?: boolean }) =>
     api<SesionVivo>(`/sesiones/${id}/ejercicios/${seId}/reemplazar`, { method: 'POST', body: d }),
   finalizar: (id: number) => api<SesionVivo>(`/sesiones/${id}/finalizar`, { method: 'POST' }),
+  // PG-39: "olvidé marcar series" (sesión parcial) y registrar un entrenamiento pasado.
+  completar: (id: number) => api<SesionVivo>(`/sesiones/${id}/completar`, { method: 'POST' }),
+  registrarPasada: (d: SesionPasadaEnvio) => api<SesionVivo>('/sesiones/pasadas', { method: 'POST', body: d, limiteMs: 30_000 }),
+};
+
+export const progresoApi = {
+  constancia: () => api<Constancia>(`/progreso/constancia?fecha=${fechaLocal()}`),
+  historial: (pagina = 1) => api<HistorialSesiones>(`/progreso/historial?pagina=${pagina}&por_pagina=10`),
+  ejercicios: () => api<{ ejercicios: EjercicioUsado[] }>(`/progreso/ejercicios?fecha=${fechaLocal()}`),
+  ejercicio: (id: number) => api<EjercicioDetalle>(`/progreso/ejercicios/${id}?fecha=${fechaLocal()}`),
+  alertas: () => api<{ alertas: Alerta[] }>(`/progreso/alertas?fecha=${fechaLocal()}`),
 };

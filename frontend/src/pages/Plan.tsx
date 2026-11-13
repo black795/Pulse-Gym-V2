@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { IconCalendar, IconClock, IconRefresh, IconShield, IconZap } from '../components/Icons';
+import { LineaPeso } from '../components/PesoSugerido';
 import { Aviso, Insignia } from '../components/UI';
 import { planApi } from '../lib/endpoints';
 import { ApiError } from '../lib/http';
@@ -187,6 +188,7 @@ function DiaDelPlan({ dia }: { dia: RutinaDia }) {
               <span style={{ fontSize: 14, fontWeight: 700 }}>
                 {e.series} series × {repeticiones(e.reps_min, e.reps_max)} reps · descanso {descanso(e.descanso_seg)}
               </span>
+              <LineaPeso s={e.peso_sugerido} />
               {e.motivo && <span className="muted" style={{ fontSize: 13 }}>{e.motivo}</span>}
             </div>
           </article>

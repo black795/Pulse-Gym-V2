@@ -4,15 +4,19 @@ lo que responde se valida igual (PG-26). El plan se pide en paralelo (una llamad
 explicación general): así llega en menos de 20 s aunque el modelo sea lento.
 
 Proveedores, igual que en el reconocimiento de fotos: "gemini" (real) o "simulada" (sin internet, para probar).
-Privacidad: a la IA se le envía objetivo, nivel, edad, sexo, composición corporal y la ZONA de cada lesión; nunca el
-nombre, el correo ni las descripciones que escribió el usuario.
+Privacidad: a la IA se le envía objetivo, nivel, edad, sexo, composición corporal, la ZONA de cada lesión y los pesos
+que ya usa en sus ejercicios (Sprint 5); nunca el nombre, el correo ni las descripciones que escribió el usuario.
+
+Sprint 5: en cada día la IA también propone un peso inicial (`peso_kg`) por ejercicio. Es solo una propuesta: al
+guardar el plan se acota a un margen de la estimación de reglas (progresion.validar_peso_ia) y solo se usa en
+ejercicios que la persona nunca hizo; con historial manda la progresión por reglas.
 """
 from dataclasses import dataclass, field
 
 from pydantic import BaseModel, ValidationError
 
 from app.core.config import get_settings
-from app.services import ia_cliente, plan_reglas as reglas
+from app.services import ia_cliente, progresion, plan_reglas as reglas
 from app.services.ia_cliente import ErrorIA, RespuestaIA
 
 TEXTO_NIVEL = {"principiante": "principiante (empieza o retoma)", "intermedio": "intermedio", "avanzado": "avanzado"}
@@ -30,6 +34,7 @@ class ErrorFormato(ValueError):
 class _EjercicioIA(BaseModel):
     codigo: str
     motivo: str = ""
+    peso_kg: float | None = None  # Sprint 5: peso inicial propuesto (si falta, se usa el de reglas)
 
 
 class _DiaIA(BaseModel):
@@ -70,7 +75,7 @@ def interpretar_dia(datos: object, ctx: reglas.Contexto, pedido: Pedido) -> regl
     for e in d.ejercicios:
         info = ctx.permitidos.get(e.codigo)
         series, rmin, rmax, descanso = reglas.prescripcion(ctx.objetivo_tipo, ctx.nivel, info.multiarticular if info else True)
-        ejercicios.append(reglas.EjercicioPlan(e.codigo, series, rmin, rmax, descanso, e.motivo))
+        ejercicios.append(reglas.EjercicioPlan(e.codigo, series, rmin, rmax, descanso, e.motivo, peso_ia_kg=e.peso_kg))
     return reglas.DiaPlan(dia=pedido.dia or "", enfoque="", grupos=[], explicacion=d.explicacion, ejercicios=ejercicios)
 
 
@@ -83,6 +88,18 @@ def interpretar_general(datos: object) -> str:
 
 def a_json_dia(d: reglas.DiaPlan) -> dict:
     return {"explicacion": d.explicacion, "ejercicios": [{"codigo": e.codigo, "motivo": e.motivo} for e in d.ejercicios]}
+
+
+def perfil_fisico(ctx: reglas.Contexto) -> progresion.PerfilFisico:
+    p = ctx.perfil
+    return progresion.PerfilFisico(nivel=ctx.nivel, sexo=p.get("sexo"), edad=p.get("edad"), peso_kg=p.get("peso_kg"))
+
+
+def peso_reglas(ctx: reglas.Contexto, codigo: str) -> float:
+    """Sprint 5: el peso inicial de reglas de un ejercicio permitido (la referencia con que se acota el de la IA)."""
+    info = ctx.permitidos[codigo]
+    datos = progresion.EjercicioDatos(info.categoria, info.multiarticular, info.grupo, info.precaucion)
+    return progresion.peso_inicial_reglas(datos, perfil_fisico(ctx))
 
 
 # ---------------- Plan semanal ----------------
@@ -104,6 +121,12 @@ def _texto_lesiones(ctx: reglas.Contexto) -> str:
         return "ninguna"
     estados = {"activa": "activa: ya quitamos todo lo que la carga", "reintroduccion": "en recuperación: los marcados [precaución] van suaves"}
     return "; ".join(f"{ctx.nombres_zonas.get(z, z)} ({estados[e]})" for z, e in ctx.zonas.items())
+
+
+def _texto_pesos(ctx: reglas.Contexto) -> str:
+    if not ctx.pesos_conocidos:
+        return "todavía no registró pesos (sería su primera vez con estos ejercicios)"
+    return "; ".join(f"{n}: {m}" for n, m in list(ctx.pesos_conocidos.items())[:12])
 
 
 def _rechazo(errores: list[str]) -> str:
@@ -138,7 +161,8 @@ def prompt_dia(ctx: reglas.Contexto, pedido: Pedido) -> str:
     return (
         f"Eres un entrenador personal. Elige y ordena los ejercicios del {reglas.NOMBRES_DIAS[pedido.dia].lower()} "
         f"(«{enfoque}») para esta persona y explícalos.\n\n"
-        f"Persona: {_texto_perfil(ctx)}.\nLesiones: {_texto_lesiones(ctx)}.\n\n"
+        f"Persona: {_texto_perfil(ctx)}.\nLesiones: {_texto_lesiones(ctx)}.\n"
+        f"Pesos que ya usa: {_texto_pesos(ctx)}.\n\n"
         "Reglas que NO puedes cambiar:\n"
         f"- Entre {min(reglas.MIN_EJERCICIOS, ctx.n_ejercicios)} y {ctx.n_ejercicios} ejercicios, sin repetir. "
         "Primero los básicos (los que mueven varias articulaciones).\n"
@@ -148,7 +172,9 @@ def prompt_dia(ctx: reglas.Contexto, pedido: Pedido) -> str:
         "- Las series, repeticiones y descansos los pone el sistema: NO los escribas.\n\n"
         "Explica en español simple, como a alguien que no sabe de gimnasio y sin términos técnicos:\n"
         f'- "explicacion": máximo 2 frases sobre el día{lesion}.\n'
-        '- "motivo": UNA frase de máximo 12 palabras por ejercicio.'
+        '- "motivo": UNA frase de máximo 12 palabras por ejercicio.\n'
+        '- "peso_kg": peso inicial PRUDENTE en kg si esta persona lo hiciera por primera vez (en mancuernas, el de '
+        'cada una; 0 si es sin equipo). Usa su perfil y los pesos que ya usa como referencia.'
         + _rechazo(pedido.errores_previos)
     )
 
@@ -156,8 +182,9 @@ def prompt_dia(ctx: reglas.Contexto, pedido: Pedido) -> str:
 def esquema_dia(ctx: reglas.Contexto, dia: str) -> dict:
     ejercicio = {
         "type": "OBJECT",
-        "properties": {"codigo": {"type": "STRING", "enum": codigos_del_dia(ctx, dia)}, "motivo": {"type": "STRING"}},
-        "required": ["codigo", "motivo"],
+        "properties": {"codigo": {"type": "STRING", "enum": codigos_del_dia(ctx, dia)}, "motivo": {"type": "STRING"},
+                       "peso_kg": {"type": "NUMBER"}},
+        "required": ["codigo", "motivo", "peso_kg"],
     }
     return {
         "type": "OBJECT",
@@ -192,7 +219,10 @@ def _plan_simulada(ctx: reglas.Contexto, pedido: Pedido, limite_seg: float) -> t
     """Sin internet: devuelve la propuesta de reglas como si la hubiera elegido la IA (para probar las pantallas)."""
     if pedido.tipo == "general":
         return "simulada", {"explicacion": "(IA simulada) " + reglas.armar_con_reglas(ctx).explicacion}
-    return "simulada", a_json_dia(pedido.base)
+    datos = a_json_dia(pedido.base)
+    for e in datos["ejercicios"]:  # Sprint 5: como peso inicial, el de reglas
+        e["peso_kg"] = peso_reglas(ctx, e["codigo"]) if e["codigo"] in ctx.permitidos else 0
+    return "simulada", datos
 
 
 PROVEEDORES_PLAN = {"gemini": _plan_gemini, "simulada": _plan_simulada}

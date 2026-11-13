@@ -1,12 +1,13 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router';
 import Avatar from '../components/Avatar';
-import { IconBandage, IconCalendar, IconDumbbell, IconHome, IconLogOut, IconSearch, IconUser } from '../components/Icons';
+import { IconBandage, IconCalendar, IconDumbbell, IconHome, IconLogOut, IconSearch, IconTrendingUp, IconUser } from '../components/Icons';
 import { Logo } from '../components/UI';
 import { useAuth } from '../features/auth/AuthContext';
 
 const ITEMS = [
   { a: '/', t: 'Hoy', i: IconHome, fin: true },
   { a: '/plan', t: 'Plan', i: IconCalendar },
+  { a: '/progreso', t: 'Progreso', i: IconTrendingUp },
   { a: '/gyms', t: 'Mis gyms', i: IconDumbbell },
   { a: '/lesiones', t: 'Lesiones', i: IconBandage },
   { a: '/perfil', t: 'Perfil', i: IconUser },

@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { IconAlertTriangle, IconCheck, IconClock, IconMapPin, IconRefresh, IconX } from '../components/Icons';
+import { PillPeso } from '../components/PesoSugerido';
 import { Aviso, Insignia, aNumero } from '../components/UI';
 import { lesionesApi, sesionesApi } from '../lib/endpoints';
 import { ApiError } from '../lib/http';
@@ -36,7 +37,7 @@ export default function Sesion() {
 
   if (error) return <div className="app-frame pantalla-sin-nav stack"><Aviso>{error}</Aviso><Link to="/" className="btn">Volver a Hoy</Link></div>;
   if (!sesion) return <div className="app-frame pantalla-sin-nav"><p className="muted pulse-latido" style={{ textAlign: 'center', padding: 40 }}>Cargando tu sesión…</p></div>;
-  return sesion.estado === 'en_curso' ? <EnVivo sesion={sesion} setSesion={setSesion} /> : <Resumen sesion={sesion} />;
+  return sesion.estado === 'en_curso' ? <EnVivo sesion={sesion} setSesion={setSesion} /> : <Resumen sesion={sesion} setSesion={setSesion} />;
 }
 
 // ---------------- En vivo ----------------
@@ -206,6 +207,7 @@ function TarjetaEjercicio({ se, activo, ocupado, onMarcar, onDeshacer, onReempla
 
       {se.nota && se.reemplaza && <p className="cambio-nota">En lugar de <b>{se.reemplaza.nombre}</b>. {se.nota}</p>}
       {se.mejor && <span className="pill-record">🏆 Tu récord: {marca(se.mejor.peso_kg, se.mejor.repeticiones)}</span>}
+      {!se.cerrado && !terminado && <PillPeso s={se.sugerencia} />}
 
       <div className="tabla-series" role="table" aria-label={`Series de ${se.ejercicio.nombre}`}>
         <div className="tabla-series-fila cabeza" role="row">
@@ -230,10 +232,11 @@ function FilaSerie({ se, numero, ocupado, sinPeso, onMarcar, onDeshacer }: {
 }) {
   const hecha = se.hechas.find(h => h.numero === numero);
   const antes = se.anterior.find(a => a.numero === numero) ?? se.anterior.at(-1);
-  // Se propone lo último que hiciste hoy en este ejercicio; si no, lo de la vez pasada; si no, el máximo del rango.
+  // Se propone lo último que hiciste hoy en este ejercicio; si no, el peso sugerido (PG-41: progresión según tu
+  // historial, o la estimación la primera vez); si no, lo de la vez pasada; si no, el máximo del rango.
   const previa = [...se.hechas].filter(h => h.numero < numero).at(-1);
-  const pesoSugerido = previa?.peso_kg ?? antes?.peso_kg ?? (sinPeso ? 0 : undefined);
-  const repsSugeridas = previa?.repeticiones ?? antes?.repeticiones ?? se.reps_max;
+  const pesoSugerido = previa?.peso_kg ?? se.sugerencia?.peso_kg ?? antes?.peso_kg ?? (sinPeso ? 0 : undefined);
+  const repsSugeridas = previa?.repeticiones ?? se.sugerencia?.reps ?? antes?.repeticiones ?? se.reps_max;
   const [peso, setPeso] = useState('');
   const [reps, setReps] = useState('');
 
@@ -411,18 +414,41 @@ function HojaReemplazo({ sesionId, se, motivo, onCerrar, onListo }: {
 }
 
 // ---------------- PG-37: resumen al finalizar ----------------
-function Resumen({ sesion }: { sesion: SesionVivo }) {
+function Resumen({ sesion, setSesion }: { sesion: SesionVivo; setSesion: (s: SesionVivo) => void }) {
   const r = sesion.resumen!;
-  const completa = r.estado === 'completa';
+  const cuenta = r.cuenta_asistencia; // completa, o registrada a mano con al menos el 80 % de las series
+  const titulo = { completa: '¡Sesión completa!', parcial: 'Sesión parcial guardada en tu historial', manual: 'Sesión registrada a mano' }[r.estado];
+  const [completando, setCompletando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // PG-39: "olvidé marcar series" → se completa el resto con lo planeado (queda como manual).
+  async function completar() {
+    setCompletando(true); setError(null);
+    try { setSesion(await sesionesApi.completar(sesion.id)); }
+    catch (e) { setError(e instanceof Error ? e.message : 'No se pudo completar la sesión.'); }
+    finally { setCompletando(false); }
+  }
+
   return (
     <div className="app-frame sesion-vivo">
       <main className="pantalla-sin-nav stack" style={{ gap: 16 }}>
-        <section className={`medalla ${completa ? 'completa' : 'parcial'}`}>
-          <span style={{ fontSize: 40 }} aria-hidden="true">{completa ? '🏅' : '📝'}</span>
-          <h1 style={{ fontSize: 22 }}>{completa ? '¡Sesión completa!' : 'Sesión parcial guardada en tu historial'}</h1>
+        <section className={`medalla ${cuenta ? 'completa' : 'parcial'}`}>
+          <span style={{ fontSize: 40 }} aria-hidden="true">{r.estado === 'completa' ? '🏅' : '📝'}</span>
+          <h1 style={{ fontSize: 22 }}>{titulo}</h1>
           <p style={{ fontSize: 14 }}>{r.mensaje}</p>
-          {completa && <span className="etiqueta-neon">CUENTA PARA TU ASISTENCIA</span>}
+          {cuenta && <span className="etiqueta-neon">CUENTA PARA TU ASISTENCIA</span>}
         </section>
+
+        {error && <Aviso>{error}</Aviso>}
+        {r.estado === 'parcial' && (
+          <section className="card stack" style={{ gap: 8 }}>
+            <p style={{ fontSize: 14 }}><b>¿Hiciste más series y olvidaste marcarlas?</b> Completamos las que faltan con lo planeado
+              (tu último peso de hoy y el mínimo de repeticiones). Queda como sesión <b>manual</b> y no cuenta como récord.</p>
+            <button className="btn btn-claro" disabled={completando} onClick={() => void completar()}>
+              ✏️ {completando ? 'Completando…' : 'Olvidé marcar series — Completar el resto con lo planeado'}
+            </button>
+          </section>
+        )}
 
         <div className="grid-2">
           <div className="card stack" style={{ gap: 2 }}>
@@ -470,6 +496,7 @@ function Resumen({ sesion }: { sesion: SesionVivo }) {
         </section>
 
         <Link to="/" className="btn">Volver a Hoy</Link>
+        <Link to="/progreso" className="btn btn-claro">Ver mi progreso</Link>
       </main>
     </div>
   );

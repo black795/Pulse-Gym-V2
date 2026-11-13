@@ -16,7 +16,10 @@ import NoEncontrada from './pages/NoEncontrada';
 import Onboarding from './pages/Onboarding';
 import Perfil from './pages/Perfil';
 import Plan from './pages/Plan';
+import Progreso from './pages/Progreso';
+import ProgresoEjercicio from './pages/ProgresoEjercicio';
 import Recuperar from './pages/Recuperar';
+import RegistrarPasado from './pages/RegistrarPasado';
 import Registro from './pages/Registro';
 import Restablecer from './pages/Restablecer';
 import Sesion from './pages/Sesion';
@@ -37,6 +40,9 @@ export default function App() {
             <Route element={<RequiereSesion><AppShell /></RequiereSesion>}>
               <Route index element={<Inicio />} />
               <Route path="/plan" element={<Plan />} />
+              <Route path="/progreso" element={<Progreso />} />
+              <Route path="/progreso/ejercicios/:id" element={<ProgresoEjercicio />} />
+              <Route path="/registrar-pasado" element={<RegistrarPasado />} />
               <Route path="/ejercicios" element={<CatalogoEjercicios />} />
               <Route path="/gyms" element={<MisGyms />} />
               <Route path="/gyms/:id" element={<GymDetalle />} />

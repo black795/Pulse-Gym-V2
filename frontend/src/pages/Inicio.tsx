@@ -9,9 +9,10 @@ import { Link, useNavigate } from 'react-router';
 import { Aviso, Insignia } from '../components/UI';
 import { IconActivity, IconCamera, IconDumbbell, IconLock, IconMapPin, IconZap } from '../components/Icons';
 import { useAuth } from '../features/auth/AuthContext';
-import { fechaLocal, gymsApi, planApi, sesionesApi } from '../lib/endpoints';
+import { LineaPeso } from '../components/PesoSugerido';
+import { fechaLocal, gymsApi, planApi, progresoApi, sesionesApi } from '../lib/endpoints';
 import { ApiError } from '../lib/http';
-import type { DiaSemana, Hoy } from '../lib/tipos';
+import type { Constancia, DiaSemana, Hoy } from '../lib/tipos';
 import { usePerfil } from '../lib/usePerfil';
 import { EQUIPO, descanso, repeticiones } from './Plan';
 
@@ -45,6 +46,7 @@ export default function Inicio() {
   const [seleccion, setSeleccion] = useState<number | null>(null);
   const [adelantado, setAdelantado] = useState<DiaSemana | null>(null);
   const [iniciando, setIniciando] = useState(false);
+  const [constancia, setConstancia] = useState<Constancia | null>(null);
   const nav = useNavigate();
   const primerNombre = usuario?.nombre.split(' ')[0] ?? '';
 
@@ -62,6 +64,8 @@ export default function Inicio() {
   }, []);
 
   useEffect(() => { void cargar(gymGuardado(), null); }, [cargar]);
+  // Los indicadores son un extra: si fallan, Hoy funciona igual.
+  useEffect(() => { progresoApi.constancia().then(setConstancia).catch(() => setConstancia(null)); }, []);
 
   async function elegirGym() {
     if (seleccion == null) return;
@@ -203,6 +207,9 @@ export default function Inicio() {
 
       {sesion && !eligiendo && (
         <>
+          {sesion.ejercicios.some(e => e.peso_sugerido?.tipo === 'retorno') && (
+            <Aviso tipo="info">🔄 Volviste después de un tiempo: hoy bajamos un 10 % los pesos de los ejercicios que no hacías hace 2 semanas o más, para cuidar tus articulaciones.</Aviso>
+          )}
           {sesion.avisos.map(a => <Aviso key={a} tipo="info">{a}</Aviso>)}
           {sesion.sugerir_fotos && sesion.gym_id && (
             <Link to={`/gyms/${sesion.gym_id}/agregar`} className="btn btn-claro btn-auto"><IconCamera width={18} height={18} /> Tomar fotos de las máquinas</Link>
@@ -221,6 +228,7 @@ export default function Inicio() {
                     {e.ejercicio.musculo_principal} · {e.ejercicio.maquinas.length ? e.ejercicio.maquinas.join(' o ') : EQUIPO[e.ejercicio.categoria_equipo]}
                   </span>
                   <span style={{ fontSize: 14, fontWeight: 700 }}>{e.series} × {repeticiones(e.reps_min, e.reps_max)} reps · descanso {descanso(e.descanso_seg)}</span>
+                  <LineaPeso s={e.peso_sugerido} />
                   {e.cambio && e.original && (
                     <p className="cambio-nota">
                       En tu plan: <b>{e.original.nombre}</b>. {e.motivo_cambio} {e.por_que_reemplazo}
@@ -232,6 +240,20 @@ export default function Inicio() {
             {sesion.omitidos.map(o => <Aviso key={o.nombre} tipo="info"><b>{o.nombre}:</b> {o.motivo}</Aviso>)}
           </div>
         </>
+      )}
+
+      {/* PG-38: racha y asistencia; PG-39: registrar lo que no se anotó */}
+      {constancia && (
+        <div className="grid-3 kpis-hoy">
+          <Link to="/progreso" className="card kpi"><b>{constancia.racha_actual} 🔥</b><span>Racha (días)</span></Link>
+          <Link to="/progreso" className="card kpi"><b>{constancia.sesiones_semana}</b><span>Esta semana</span></Link>
+          <Link to="/progreso" className="card kpi"><b>{constancia.sesiones_mes}</b><span>Este mes</span></Link>
+        </div>
+      )}
+      {hoy?.plan_existe && enCurso == null && (
+        <p className="muted" style={{ fontSize: 13.5, textAlign: 'center' }}>
+          ¿Entrenaste y olvidaste anotarlo? <Link to="/registrar-pasado">Registrar entrenamiento pasado</Link>
+        </p>
       )}
 
       {hoy?.plan_existe && (

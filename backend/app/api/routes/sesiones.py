@@ -4,7 +4,9 @@ from sqlalchemy.orm import Session
 from app.api.deps import usuario_actual
 from app.db.session import get_db
 from app.models import Usuario
-from app.schemas.sesion import IniciarSesionIn, MotivoReemplazo, OpcionesReemplazoOut, ReemplazoIn, SerieIn, SesionOut
+from app.schemas.sesion import (
+    IniciarSesionIn, MotivoReemplazo, OpcionesReemplazoOut, ReemplazoIn, SerieIn, SesionOut, SesionPasadaIn,
+)
 from app.services import sesion_service
 
 router = APIRouter(prefix="/sesiones", tags=["Sesión en vivo"])
@@ -24,6 +26,13 @@ def iniciar(datos: IniciarSesionIn, db: Session = Depends(get_db), usuario: Usua
     """PG-30: inicia la sesión de hoy ya adaptada al gym y la congela. Solo una a la vez (`codigo: sesion_en_curso`)."""
     s = sesion_service.iniciar(db, usuario, datos)
     return sesion_service.a_out(db, usuario, s)
+
+
+@router.post("/pasadas", response_model=SesionOut, status_code=status.HTTP_201_CREATED)
+def registrar_pasada(datos: SesionPasadaIn, db: Session = Depends(get_db), usuario: Usuario = Depends(usuario_actual)):
+    """PG-39: registra un entrenamiento que hiciste sin anotarlo (hasta 7 días atrás). Queda como `manual`.
+    `codigo: ya_registrada` si ese día del plan ya está en esa fecha."""
+    return sesion_service.a_out(db, usuario, sesion_service.registrar_pasada(db, usuario, datos))
 
 
 @router.get("/{sesion_id}", response_model=SesionOut)
@@ -76,3 +85,10 @@ def reemplazar(datos: ReemplazoIn, sesion_id: int, se_id: int,
 def finalizar(sesion_id: int, db: Session = Depends(get_db), usuario: Usuario = Depends(usuario_actual)):
     """PG-37: termina la sesión y la califica (completa o parcial). Tocarlo dos veces no cambia nada."""
     return sesion_service.a_out(db, usuario, sesion_service.finalizar(db, usuario, sesion_id))
+
+
+@router.post("/{sesion_id}/completar", response_model=SesionOut)
+def completar(sesion_id: int, db: Session = Depends(get_db), usuario: Usuario = Depends(usuario_actual)):
+    """PG-39 "Olvidé marcar series": completa una sesión parcial con lo planeado (hasta 48 h después). Queda como
+    `manual`; las series agregadas no cuentan como récord."""
+    return sesion_service.a_out(db, usuario, sesion_service.completar_con_plan(db, usuario, sesion_id))

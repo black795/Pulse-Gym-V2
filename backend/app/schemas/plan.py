@@ -28,6 +28,16 @@ class EjercicioBreveOut(BaseModel):
     maquinas: list[str]  # nombres de las máquinas con que se hace
 
 
+class PesoSugeridoOut(BaseModel):
+    """Sprint 5 (PG-41/PG-42): el peso que conviene usar. La primera vez, estimado (por la IA dentro de un margen de
+    las reglas, o por las reglas); después, según tu historial en ese ejercicio."""
+    peso_kg: float
+    reps: int  # repeticiones a intentar en cada serie
+    tipo: Literal["inicial", "subir", "mantener", "bajar", "retorno"]
+    origen: Literal["historial", "ia", "reglas"]
+    texto: str
+
+
 class RutinaEjercicioOut(BaseModel):
     id: int
     orden: int
@@ -38,6 +48,7 @@ class RutinaEjercicioOut(BaseModel):
     descanso_seg: int
     motivo: str
     precaucion: bool
+    peso_sugerido: PesoSugeridoOut | None = None  # Sprint 5: None en ejercicios sin peso que nunca hiciste
 
 
 class RutinaDiaOut(BaseModel):
@@ -106,6 +117,7 @@ class EjercicioHoyOut(BaseModel):
     reps_max: int
     descanso_seg: int
     rutina_ejercicio_id: int | None = None  # Sprint 4: de qué ejercicio del plan sale (las adaptaciones viejas no lo tienen)
+    peso_sugerido: PesoSugeridoOut | None = None  # Sprint 5: se calcula al pedirlo (no se guarda en la adaptación)
 
 
 class OmitidoOut(BaseModel):

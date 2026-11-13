@@ -4,7 +4,7 @@
 No usa IA: todo son reglas (rápido, gratis y funciona aunque la IA esté caída). El descanso con sonido (PG-36) vive
 en la app; el backend solo le da el descanso de cada ejercicio.
 """
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -13,15 +13,20 @@ from app.core.config import get_settings
 from app.db.base import ahora
 from app.models import Ejercicio, Gym, Rutina, RutinaDia, SerieRegistrada, SesionEjercicio, SesionEntreno, Usuario, ZonaLesion
 from app.schemas.lesion import LesionIn
+from app.schemas.plan import SesionHoyOut
 from app.schemas.sesion import (
     IniciarSesionIn, MejorMarcaOut, OpcionesReemplazoOut, RecordOut, ReemplazoIn, ResumenOut, SerieAnteriorOut, SerieIn,
-    SerieOut, SesionEjercicioOut, SesionOut,
+    SerieOut, SesionEjercicioOut, SesionOut, SesionPasadaIn,
 )
-from app.services import adaptacion_service, catalogo_service, gym_service, lesion_service, plan_service
+from app.services import adaptacion_service, catalogo_service, gym_service, lesion_service, pesos_service, plan_service
+from app.services import progresion
 from app.services import plan_reglas as reglas
 from app.services.errores import ErrorNegocio
 
 TEXTO_MOTIVO = {"maquina_ocupada": "La máquina estaba ocupada", "molestia_dolor": "Te molestaba"}
+# PG-39 (Sprint 5): plazos PROPUESTOS para registrar a mano lo que no se anotó.
+HORAS_PARA_COMPLETAR = 48  # "olvidé marcar series" en una sesión parcial
+DIAS_ATRAS_PASADA = 7  # registrar un entrenamiento pasado
 
 
 # ---------------- Consultas ----------------
@@ -77,12 +82,9 @@ def _gym_maquina_id(gym: Gym | None, e: Ejercicio) -> int | None:
     return next((gm.id for gm in gym.maquinas if gm.estado == "disponible" and gm.maquina and gm.maquina.codigo in codigos), None)
 
 
-def iniciar(db: Session, usuario: Usuario, datos: IniciarSesionIn) -> SesionEntreno:
-    actual = en_curso(db, usuario)
-    if actual is not None:
-        raise ErrorNegocio("Ya tienes una rutina en curso. Termínala antes de empezar otra.", 409, "sesion_en_curso")
-    fecha = adaptacion_service.fecha_valida(datos.fecha)
-    hoy = adaptacion_service.hoy(db, usuario, gym_id=datos.gym_id, dia=datos.dia, fecha=fecha)
+def _sesion_del_dia(db: Session, usuario: Usuario, gym_id: int | None, dia: str | None, fecha: date) -> SesionHoyOut:
+    """El día del plan adaptado al gym (lo mismo que muestra /api/hoy), o un error claro si no se puede entrenar."""
+    hoy = adaptacion_service.hoy(db, usuario, gym_id=gym_id, dia=dia, fecha=fecha)
     if not hoy.plan_existe:
         raise ErrorNegocio("Primero arma tu plan semanal.", 400, "sin_plan")
     if hoy.requiere_elegir_gym:
@@ -92,7 +94,27 @@ def iniciar(db: Session, usuario: Usuario, datos: IniciarSesionIn) -> SesionEntr
         raise ErrorNegocio("Hoy no toca entrenar según tu plan. Puedes adelantar el siguiente día.", 400, "dia_libre")
     if not sesion_hoy.ejercicios:
         raise ErrorNegocio("No hay ejercicios que puedas hacer hoy en este gym.", 400, "sin_ejercicios")
+    return sesion_hoy
 
+
+def iniciar(db: Session, usuario: Usuario, datos: IniciarSesionIn) -> SesionEntreno:
+    actual = en_curso(db, usuario)
+    if actual is not None:
+        raise ErrorNegocio("Ya tienes una rutina en curso. Termínala antes de empezar otra.", 409, "sesion_en_curso")
+    fecha = adaptacion_service.fecha_valida(datos.fecha)
+    sesion_hoy = _sesion_del_dia(db, usuario, datos.gym_id, datos.dia, fecha)
+    s, gym = _congelar(db, usuario, sesion_hoy, fecha, ahora())
+    db.add(s)
+    if gym is not None:
+        gym.ultimo_uso_at = ahora()  # PG-06: el último gym usado
+    db.commit()
+    db.refresh(s)
+    return s
+
+
+def _congelar(db: Session, usuario: Usuario, sesion_hoy: SesionHoyOut, fecha: date,
+              inicio: datetime) -> tuple[SesionEntreno, Gym | None]:
+    """Copia los ejercicios del día ya adaptados al gym en una sesión nueva (todavía sin guardar)."""
     gym = db.get(Gym, sesion_hoy.gym_id) if sesion_hoy.gym_id else None
     rutina = plan_service.activa(db, usuario)
     rutina_dia = next((d for d in rutina.dias if d.dia_semana == sesion_hoy.dia), None) if rutina else None
@@ -101,7 +123,7 @@ def iniciar(db: Session, usuario: Usuario, datos: IniciarSesionIn) -> SesionEntr
     s = SesionEntreno(
         usuario_id=usuario.id, gym_id=gym.id if gym else None, gym_nombre=gym.nombre if gym else None,
         rutina_dia_id=rutina_dia.id if rutina_dia else None, dia_semana=sesion_hoy.dia, enfoque=sesion_hoy.enfoque,
-        fecha=fecha, inicio_at=ahora(), duracion_estimada_seg=sesion_hoy.minutos_estimados * 60, estado="en_curso",
+        fecha=fecha, inicio_at=inicio, duracion_estimada_seg=sesion_hoy.minutos_estimados * 60, estado="en_curso",
     )
     for x in sesion_hoy.ejercicios:
         e = db.get(Ejercicio, x.ejercicio.id)
@@ -113,12 +135,7 @@ def iniciar(db: Session, usuario: Usuario, datos: IniciarSesionIn) -> SesionEntr
             motivo=("sin_equipo" if e.categoria_equipo == "sin_equipo" else "adaptado_gym") if x.cambio else "plan_original",
             nota=" ".join(t for t in (x.motivo_cambio, x.por_que_reemplazo) if t) or None,
         ))
-    db.add(s)
-    if gym is not None:
-        gym.ultimo_uso_at = ahora()  # PG-06: el último gym usado
-    db.commit()
-    db.refresh(s)
-    return s
+    return s, gym
 
 
 # ---------------- PG-35 y PG-40: series y récords ----------------
@@ -318,6 +335,86 @@ def finalizar(db: Session, usuario: Usuario, sesion_id: int) -> SesionEntreno:
     return s
 
 
+def _calificar_manual(s: SesionEntreno) -> None:
+    """PG-39: lo que se registra a mano después queda como "manual". Cuenta para la asistencia si llega al mismo
+    porcentaje de series que una sesión completa (no se exige tiempo: no hubo cronómetro)."""
+    hechas, planeadas, _ = _totales(s)
+    s.estado = "manual"
+    s.cuenta_asistencia = planeadas > 0 and hechas / planeadas >= get_settings().sesion_pct_completa
+
+
+def completar_con_plan(db: Session, usuario: Usuario, sesion_id: int) -> SesionEntreno:
+    """PG-39 "Olvidé marcar series": completa una sesión PARCIAL con lo planeado. Cada serie que falta se llena con el
+    último peso que marcaste hoy en ese ejercicio (o el peso sugerido, si no marcaste ninguna) y el mínimo de
+    repeticiones del plan. Esas series nunca cuentan como récord: no se midieron."""
+    s = obtener(db, usuario, sesion_id)
+    if s.estado != "parcial":
+        raise ErrorNegocio("Solo se puede completar una sesión parcial.", 409, "no_parcial")
+    if s.fin_at is None or s.fin_at < ahora() - timedelta(hours=HORAS_PARA_COMPLETAR):
+        raise ErrorNegocio(f"Solo se puede completar hasta {HORAS_PARA_COMPLETAR} horas después de terminarla.",
+                           409, "fuera_de_plazo")
+    abiertos = [se for se in s.ejercicios if not se.cerrado]
+    sugeridos = pesos_service.sugerir(db, usuario, [
+        pesos_service.Pedido(se.ejercicio, se.reps_min, se.reps_max, se.precaucion) for se in abiertos if not se.series_hechas
+    ], s.fecha)
+    for se in abiertos:
+        hechos = {x.numero_serie for x in se.series_hechas}
+        ultima = se.series_hechas[-1] if se.series_hechas else None
+        sugerido = sugeridos.get(se.ejercicio_id)
+        peso = ultima.peso_kg if ultima else sugerido.peso_kg if sugerido else 0.0
+        for n in range(1, se.series + 1):
+            if n not in hechos:
+                se.series_hechas.append(SerieRegistrada(numero_serie=n, peso_kg=peso, repeticiones=se.reps_min,
+                                                        es_record=False, completada_at=s.fin_at))
+    _calificar_manual(s)
+    db.commit()
+    db.refresh(s)
+    return s
+
+
+def registrar_pasada(db: Session, usuario: Usuario, datos: SesionPasadaIn) -> SesionEntreno:
+    """PG-39 "Registrar entrenamiento pasado": una sesión que hiciste sin anotarla (hasta 7 días atrás). Los
+    ejercicios son los de ese día del plan adaptado al gym (no se aceptan otros) y queda como "manual"."""
+    hoy = ahora().date()
+    # +1 día: el celular puede ir adelantado respecto de la hora del servidor (UTC).
+    if not hoy - timedelta(days=DIAS_ATRAS_PASADA) <= datos.fecha <= hoy + timedelta(days=1):
+        raise ErrorNegocio(f"Solo puedes registrar entrenamientos de los últimos {DIAS_ATRAS_PASADA} días.", 400, "fecha_invalida")
+    repetida = db.scalar(select(SesionEntreno.id).where(
+        SesionEntreno.usuario_id == usuario.id, SesionEntreno.fecha == datos.fecha,
+        SesionEntreno.dia_semana == datos.dia, SesionEntreno.estado != "en_curso",
+    ).limit(1))
+    if repetida is not None:  # también evita duplicarla si el pedido llega dos veces
+        raise ErrorNegocio("Ya registraste ese día del plan en esa fecha.", 409, "ya_registrada")
+
+    sesion_dia = _sesion_del_dia(db, usuario, datos.gym_id, datos.dia, hoy)
+    duracion = sesion_dia.minutos_estimados * 60
+    # Sin hora real: se ubica al mediodía de ese día (así el historial y los récords quedan en orden).
+    inicio = datetime.combine(datos.fecha, time(12)) if datos.fecha < hoy else ahora() - timedelta(seconds=duracion)
+    s, _ = _congelar(db, usuario, sesion_dia, datos.fecha, inicio)
+    por_ejercicio = {se.ejercicio_id: se for se in s.ejercicios}
+    for e in datos.ejercicios:
+        se = por_ejercicio.get(e.ejercicio_id)
+        if se is None:
+            raise ErrorNegocio("Ese ejercicio no es parte de ese día en este gym.", 400, "ejercicio_invalido")
+        if len(e.series) > se.series + 3:  # las mismas 3 series extra que en vivo
+            nombre = db.get(Ejercicio, se.ejercicio_id).nombre
+            raise ErrorNegocio(f"{nombre}: como máximo {se.series + 3} series.", 400)
+        for n, x in enumerate(e.series, start=1):
+            se.series_hechas.append(SerieRegistrada(numero_serie=n, peso_kg=progresion.redondear(x.peso_kg),
+                                                    repeticiones=x.repeticiones, completada_at=inicio + timedelta(minutes=n)))
+    if not any(se.series_hechas for se in s.ejercicios):
+        raise ErrorNegocio("Marca al menos una serie.", 400, "sin_series")
+    s.fin_at = inicio + timedelta(seconds=duracion)
+    db.add(s)
+    db.flush()
+    for eid in {se.ejercicio_id for se in s.ejercicios if se.series_hechas}:
+        _recalcular_records(db, usuario, s, eid)
+    _calificar_manual(s)
+    db.commit()
+    db.refresh(s)
+    return s
+
+
 def descartar(db: Session, usuario: Usuario, sesion_id: int) -> None:
     """Empezaste por error: se borra la sesión en curso (una terminada no se borra desde aquí)."""
     s = obtener(db, usuario, sesion_id)
@@ -340,6 +437,10 @@ def _resumen(s: SesionEntreno) -> ResumenOut:
                for e in s.ejercicios for x in e.series_hechas if x.es_record]
     if s.estado == "completa":
         mensaje = f"¡Sesión completa! Hiciste {hechas} de {planeadas} series en {_min_seg(duracion)}."
+    elif s.estado == "manual":
+        mensaje = (f"Registrada a mano: {hechas} de {planeadas} series. "
+                   + ("Cuenta para tu asistencia." if s.cuenta_asistencia else "Se guardó en tu historial, aunque no "
+                      "cuenta como sesión completa."))
     else:
         mensaje = (f"Marcaste {hechas} de {planeadas} series ({_min_seg(duracion)}). Se guardó todo tu avance en el "
                    "historial, aunque no cuenta como sesión completa.")
@@ -354,6 +455,10 @@ def _resumen(s: SesionEntreno) -> ResumenOut:
 
 def a_out(db: Session, usuario: Usuario, s: SesionEntreno) -> SesionOut:
     grupos = plan_service.nombres_grupos(db)
+    # Sprint 5 (PG-41/PG-42): el peso para hoy, solo mientras entrenas.
+    sugerencias = pesos_service.sugerir(db, usuario, [
+        pesos_service.Pedido(e.ejercicio, e.reps_min, e.reps_max, e.precaucion) for e in s.ejercicios if not e.cerrado
+    ], s.fecha) if s.estado == "en_curso" else {}
     ejercicios = []
     for e in s.ejercicios:
         historial = _historial(db, usuario, e.ejercicio_id, s)
@@ -368,6 +473,7 @@ def a_out(db: Session, usuario: Usuario, s: SesionEntreno) -> SesionOut:
                              completada_at=x.completada_at) for x in e.series_hechas],
             anterior=[SerieAnteriorOut(numero=x.numero_serie, peso_kg=x.peso_kg, repeticiones=x.repeticiones) for x in anterior],
             mejor=MejorMarcaOut(peso_kg=mejor[0], repeticiones=mejor[1]) if mejor else None,
+            sugerencia=sugerencias.get(e.ejercicio_id) if not e.cerrado else None,
         ))
     hechas, planeadas, volumen = _totales(s)
     return SesionOut(

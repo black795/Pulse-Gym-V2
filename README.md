@@ -1,15 +1,16 @@
-# Pulse Gym v2 — Entrenador IA (Sprints 1 a 4)
+# Pulse Gym v2 — Entrenador IA (Sprints 1 a 5)
 
 App web para celular (PWA) que arma tu entrenamiento según tu cuerpo, tus lesiones y las máquinas de tu gimnasio.
 Incluye el **Sprint 1** (cuenta, perfil, consentimiento, lesiones y catálogo), el **Sprint 2** (mis gyms, fotos de
 máquinas reconocidas con IA, inventario e implementos) y el **Sprint 3** (plan semanal con reglas + IA, validación,
 explicación, elegir el gym y adaptar la sesión del día, límites y costo de la IA) y el **Sprint 4** (sesión en vivo:
-cronómetro, series, descanso con sonido, récords, máquina ocupada, «me molesta» y resumen al finalizar).
-Estado de cada tarjeta: `SPRINT1.md` a `SPRINT4.md`.
+cronómetro, series, descanso con sonido, récords, máquina ocupada, «me molesta» y resumen al finalizar) y el **Sprint 5**
+(progreso: racha, historial de máquinas y pesos, pesos sugeridos por la IA y por tu historial, alertas y registro manual).
+Estado de cada tarjeta: `SPRINT1.md` a `SPRINT5.md`.
 
 ```
 pulse-gym-v2/
-├── backend/               API (Python + FastAPI). 188 pruebas automáticas.
+├── backend/               API (Python + FastAPI). 246 pruebas automáticas.
 │   └── catalogo/          Los 4 archivos JSON con máquinas y ejercicios (los edita el equipo)
 ├── frontend/              La app de celular (React + Vite), instalable como PWA
 ├── referencia-prototipos/ Pantallas viejas de la v1 para usar en sprints futuros
@@ -18,6 +19,7 @@ pulse-gym-v2/
 ├── SPRINT2.md             Ídem Sprint 2 (+ cómo activar la IA gratuita)
 ├── SPRINT3.md             Ídem Sprint 3 (+ qué tan rápida es la IA gratuita)
 ├── SPRINT4.md             Ídem Sprint 4 (sesión en vivo)
+├── SPRINT5.md             Ídem Sprint 5 (progreso y pesos)
 └── docker-compose.yml     (opcional) PostgreSQL
 ```
 
@@ -51,7 +53,7 @@ copia el enlace de ahí. Para enviarlos de verdad, configura SMTP en `.env`.
 
 ## Pruebas
 ```
-cd backend && pytest          # 188 pruebas
+cd backend && pytest          # 246 pruebas
 cd frontend && npm run build  # revisa tipos y compila
 ```
 
@@ -75,6 +77,12 @@ En **Hoy**, **▶ Iniciar rutina de hoy** congela la sesión adaptada a tu gym y
 cronómetro, tabla de series con «la vez pasada», descanso con sonido, récords, «Máquina ocupada» y «Me molesta»
 (cambian solo la sesión de hoy). Al finalizar se califica como completa (≥ 80 % de las series en un tiempo coherente)
 o parcial. Detalles en `SPRINT4.md`.
+
+## Progreso y pesos (Sprint 5)
+La primera vez que haces un ejercicio, la IA estima un peso inicial (siempre acotado por reglas). Después, el peso sale
+de tu historial: sube si completaste todas las series, se mantiene si no, y baja 10 % si volviste tras 2 semanas.
+Pestaña **Progreso**: racha, alertas, **Mis máquinas y pesos** (solo las que ya usaste, con gráfico y récords) e historial.
+«Olvidé marcar series» y «Registrar entrenamiento pasado» guardan sesiones manuales. Detalles en `SPRINT5.md`.
 
 ## Instalarla como app (PWA)
 Solo funciona con la versión publicada (`npm run build`, servida por HTTPS): en el celular, menú del navegador →

@@ -116,6 +116,9 @@ class Contexto:
     grupos_omitidos: dict[str, str] = field(default_factory=dict)  # grupo → por qué no se puede entrenar
     perfil: dict = field(default_factory=dict)  # edad, sexo, % grasa, masa muscular (para la IA)
     con_equipo: bool = True
+    # Sprint 5: lo que ya levanta en ejercicios que hizo (nombre → "60 kg × 10"), para que la IA calibre los pesos
+    # iniciales de los ejercicios nuevos.
+    pesos_conocidos: dict[str, str] = field(default_factory=dict)
     # Se calculan con `preparar`:
     esquema: str = ""
     plantilla_por_dia: dict[str, str] = field(default_factory=dict)
@@ -131,6 +134,7 @@ class EjercicioPlan:
     descanso_seg: int
     motivo: str = ""
     precaucion: bool = False
+    peso_ia_kg: float | None = None  # Sprint 5: peso inicial que propuso la IA (se acota con reglas al guardarlo)
 
 
 @dataclass
@@ -384,7 +388,7 @@ def revisar_dia(d: DiaPlan, ctx: Contexto, errores: list[str], correcciones: lis
         if (s, rmin, rmax, desc) != (ej.series, ej.reps_min, ej.reps_max, ej.descanso_seg):
             correcciones.append(f"{ej.codigo}: series/repeticiones/descanso ajustados a los rangos de tu objetivo")
         motivo = lenguaje_simple(_una_frase(ej.motivo)) or _motivo_reglas(ctx, info)
-        limpios.append(EjercicioPlan(ej.codigo, s, rmin, rmax, desc, motivo, info.precaucion))
+        limpios.append(EjercicioPlan(ej.codigo, s, rmin, rmax, desc, motivo, info.precaucion, ej.peso_ia_kg))
     if len(limpios) > ctx.n_ejercicios:
         correcciones.append(f"{NOMBRES_DIAS[d.dia]}: se dejaron {ctx.n_ejercicios} ejercicios para que entre en tus minutos")
         limpios = limpios[: ctx.n_ejercicios]

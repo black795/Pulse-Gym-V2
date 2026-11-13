@@ -17,11 +17,13 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.models import GrupoMuscular, Rutina, RutinaDia, RutinaEjercicio, Usuario, ZonaLesion
+from app.db.base import ahora
+from app.models import Ejercicio, GrupoMuscular, Rutina, RutinaDia, RutinaEjercicio, Usuario, ZonaLesion
 from app.models.plan import DIAS_SEMANA
 from app.schemas.plan import EjercicioBreveOut, LesionEscudoOut, PlanEstadoOut, PlanOut, RutinaDiaOut, RutinaEjercicioOut
-from app.services import catalogo_service, gym_service, ia_cliente, ia_uso_service, lesion_service, plan_ia, usuario_service
+from app.services import catalogo_service, gym_service, ia_cliente, ia_uso_service, lesion_service, pesos_service, plan_ia
 from app.services import plan_reglas as reglas
+from app.services import progresion, usuario_service
 from app.services.errores import ErrorNegocio
 from app.services.ia_cliente import ErrorIA
 
@@ -96,6 +98,7 @@ def contexto(db: Session, usuario: Usuario, dias: list[str]) -> tuple[reglas.Con
         minutos=o.minutos_por_sesion, permitidos=permitidos, bloqueados=bloqueados,
         nombres_grupos={g.codigo: g.nombre for g in db.scalars(select(GrupoMuscular))},
         zonas=zonas, nombres_zonas=nombres_zonas, perfil=perfil, con_equipo=bool(codigos),
+        pesos_conocidos=_pesos_conocidos(db, usuario),
     ))
     # PG-20: si no queda ningún ejercicio posible para un grupo, se omite y se avisa.
     for d in ctx.dias:
@@ -107,6 +110,38 @@ def contexto(db: Session, usuario: Usuario, dias: list[str]) -> tuple[reglas.Con
                 else "no hay equipo para este grupo en tus gyms."
             )
     return ctx, excluidos
+
+
+def _pesos_conocidos(db: Session, usuario: Usuario, maximo: int = 12) -> dict[str, str]:
+    """Sprint 5: lo último que levantó en cada ejercicio (los más recientes primero), para que la IA calibre."""
+    veces = pesos_service.historial(db, usuario.id)
+    if not veces:
+        return {}
+    nombres = dict(db.execute(select(Ejercicio.id, Ejercicio.nombre).where(Ejercicio.id.in_(veces))).all())
+    recientes = sorted(veces.items(), key=lambda kv: kv[1][0].fecha, reverse=True)[:maximo]
+    conocidos = {}
+    for eid, lista in recientes:
+        top = max(lista[0].series, key=lambda s: (s.peso_kg, s.repeticiones))
+        conocidos[nombres.get(eid, str(eid))] = (f"{progresion.kg(top.peso_kg)} × {top.repeticiones}" if top.peso_kg > 0
+                                                 else f"{top.repeticiones} repeticiones sin peso")
+    return conocidos
+
+
+def _pesos_iniciales(db: Session, usuario: Usuario, ctx: reglas.Contexto, plan: reglas.PlanPropuesto) -> dict[str, dict]:
+    """Sprint 5: los pesos iniciales que propuso la IA, ACOTADOS por reglas, solo de ejercicios que nunca hiciste
+    (con historial manda la progresión). Si la IA no propuso nada (días de reglas), queda la estimación de reglas."""
+    ids = {ctx.permitidos[e.codigo].id for d in plan.dias for e in d.ejercicios}
+    ya_hechos = set(pesos_service.historial(db, usuario.id, ids))
+    base: dict[str, dict] = {}
+    for d in plan.dias:
+        for e in d.ejercicios:
+            info = ctx.permitidos[e.codigo]
+            if info.id in ya_hechos or info.categoria == "sin_equipo" or str(info.id) in base:
+                continue
+            peso = progresion.validar_peso_ia(e.peso_ia_kg, plan_ia.peso_reglas(ctx, e.codigo))
+            if peso is not None:
+                base[str(info.id)] = {"kg": peso, "origen": "ia", "precaucion": info.precaucion}
+    return base
 
 
 @dataclass
@@ -252,7 +287,8 @@ def generar(db: Session, usuario: Usuario, dias: list[str] | None, motivo: str) 
         usuario_id=usuario.id, rutina_anterior_id=actual.id if actual else None, version=version, estado="activa",
         origen=origen, modelo=modelo, ia_intentos=intentos, motivo=motivo, esquema=ctx.esquema,
         objetivo_tipo=ctx.objetivo_tipo, explicacion=plan.explicacion, avisos=plan.avisos,
-        parametros={"dias": ctx.dias, "zonas": ctx.zonas, "excluidos": excluidos, **_firma_perfil(usuario)},
+        parametros={"dias": ctx.dias, "zonas": ctx.zonas, "excluidos": excluidos, **_firma_perfil(usuario),
+                    "pesos_base": _pesos_iniciales(db, usuario, ctx, plan)},
         duracion_ms=int((time.perf_counter() - inicio) * 1000),
         dias=[
             RutinaDia(
@@ -309,6 +345,10 @@ def nombres_grupos(db: Session) -> dict[str, str]:
 def a_plan_out(db: Session, rutina: Rutina) -> PlanOut:
     grupos = nombres_grupos(db)
     zonas = {z.codigo: z.nombre for z in db.scalars(select(ZonaLesion))}
+    # Sprint 5: el peso de cada ejercicio para la próxima vez (estimado si nunca lo hiciste, o según tu historial).
+    pesos = pesos_service.sugerir(db, db.get(Usuario, rutina.usuario_id), [
+        pesos_service.Pedido(e.ejercicio, e.reps_min, e.reps_max, e.precaucion) for d in rutina.dias for e in d.ejercicios
+    ], ahora().date())
     return PlanOut(
         id=rutina.id, version=rutina.version, origen=rutina.origen, modelo=rutina.modelo, motivo=rutina.motivo,  # type: ignore[arg-type]
         esquema=rutina.esquema, esquema_texto=reglas.TEXTO_ESQUEMA.get(rutina.esquema, rutina.esquema),
@@ -326,7 +366,7 @@ def a_plan_out(db: Session, rutina: Rutina) -> PlanOut:
                     RutinaEjercicioOut(
                         id=e.id, orden=e.orden, ejercicio=ejercicio_breve(e.ejercicio, grupos), series=e.series,
                         reps_min=e.reps_min, reps_max=e.reps_max, descanso_seg=e.descanso_seg, motivo=e.motivo,
-                        precaucion=e.precaucion,
+                        precaucion=e.precaucion, peso_sugerido=pesos.get(e.ejercicio_id),
                     )
                     for e in d.ejercicios
                 ],

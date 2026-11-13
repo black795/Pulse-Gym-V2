@@ -4,9 +4,11 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.catalogo import AlternativaOut
-from app.schemas.plan import DiaSemana, EjercicioBreveOut
+from app.schemas.plan import DiaSemana, EjercicioBreveOut, PesoSugeridoOut
 
 MotivoReemplazo = Literal["maquina_ocupada", "molestia_dolor"]
+# manual (Sprint 5, PG-39): completada a mano después ("olvidé marcar series") o un entrenamiento pasado.
+EstadoTerminada = Literal["completa", "parcial", "manual"]
 
 
 class IniciarSesionIn(BaseModel):
@@ -67,6 +69,7 @@ class SesionEjercicioOut(BaseModel):
     hechas: list[SerieOut]
     anterior: list[SerieAnteriorOut]  # PG-35: "vez pasada" (la última sesión con este ejercicio)
     mejor: MejorMarcaOut | None  # PG-40: tu récord antes de esta sesión
+    sugerencia: PesoSugeridoOut | None = None  # Sprint 5 (PG-41): el peso para hoy (solo con la sesión en curso)
 
 
 class RecordOut(BaseModel):
@@ -77,7 +80,7 @@ class RecordOut(BaseModel):
 
 class ResumenOut(BaseModel):
     """PG-37: la calificación al finalizar."""
-    estado: Literal["completa", "parcial"]
+    estado: EstadoTerminada
     cuenta_asistencia: bool
     duracion_seg: int
     duracion_estimada_seg: int
@@ -91,7 +94,7 @@ class ResumenOut(BaseModel):
 
 class SesionOut(BaseModel):
     id: int
-    estado: Literal["en_curso", "completa", "parcial"]
+    estado: Literal["en_curso", "completa", "parcial", "manual"]
     fecha: date
     dia: DiaSemana
     enfoque: str
@@ -116,3 +119,25 @@ class OpcionesReemplazoOut(BaseModel):
     opciones: list[AlternativaOut]  # en orden: otra máquina libre → peso libre → sin equipo
     puede_guardar_lesion: bool  # hay consentimiento de datos de salud
     aviso: str | None
+
+
+# ---------------- Sprint 5, PG-39: registrar un entrenamiento pasado ----------------
+class SeriePasadaIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    peso_kg: float = Field(ge=0, le=500)
+    repeticiones: int = Field(ge=1, le=100)
+
+
+class EjercicioPasadoIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    ejercicio_id: int = Field(description="Uno de los ejercicios de ese día adaptado al gym (los de /api/hoy).")
+    series: list[SeriePasadaIn] = Field(default_factory=list, max_length=20)
+
+
+class SesionPasadaIn(BaseModel):
+    """Entrenaste y olvidaste anotarlo: el día del plan que hiciste, dónde, cuándo (hasta 7 días atrás) y las series."""
+    model_config = ConfigDict(extra="forbid")
+    fecha: date
+    dia: DiaSemana
+    gym_id: int | None = None
+    ejercicios: list[EjercicioPasadoIn] = Field(min_length=1, max_length=12)

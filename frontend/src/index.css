@@ -380,3 +380,29 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
   .columnas-lesiones { grid-template-columns: minmax(320px, 2fr) minmax(0, 3fr); }
   .columna-fija { position: sticky; top: 32px; }
 }
+
+/* ---------------- Sprint 5: progreso y pesos sugeridos ---------------- */
+.pill-peso { align-self: stretch; border-radius: 12px; padding: 8px 12px; font-size: 13px; font-weight: 600; line-height: 1.4; }
+.pill-peso.peso-subir { background: var(--primary-tint); color: var(--primary-dark); }
+.pill-peso.peso-mantener, .pill-peso.peso-inicial { background: #EEF2EF; color: var(--ink); }
+.pill-peso.peso-bajar { background: var(--warning-tint); color: #92400E; }
+.linea-peso { font-size: 13px; color: var(--muted); }
+.linea-peso b { color: var(--ink); }
+.linea-peso.peso-subir b { color: var(--primary-dark); }
+.kpis-hoy .kpi { text-decoration: none; color: inherit; }
+.kpi { display: flex; flex-direction: column; gap: 2px; padding: 12px; }
+.kpi b { font: 800 20px 'Sora', sans-serif; }
+.kpi span { font-size: 12.5px; color: var(--muted); }
+.kpi small { font-size: 11.5px; color: var(--muted-2); }
+.cambio-sube { color: var(--primary-dark); font-weight: 700; }
+.cambio-baja { color: var(--warning); font-weight: 700; }
+.grafico { width: 100%; height: auto; display: block; touch-action: manipulation; }
+.grafico-grilla { stroke: var(--border); stroke-width: 1; }
+.grafico-eje { fill: var(--muted); font-size: 10.5px; }
+.grafico-linea { fill: none; stroke: var(--primary); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.grafico-punto { fill: var(--primary); stroke: var(--surface); stroke-width: 2; }
+.grafico-punto.record { fill: var(--primary-dark); }
+.grafico-guia { stroke: var(--muted-2); stroke-width: 1; stroke-dasharray: 3 3; }
+.grafico-dato { font-size: 13.5px; min-height: 20px; }
+.tabla-series-fila.pasada { grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1fr) 46px; }
+.tabla-series-fila.omitida { opacity: .5; }
