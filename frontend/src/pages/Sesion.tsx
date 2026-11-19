@@ -5,7 +5,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
-import { IconAlertTriangle, IconCheck, IconClock, IconMapPin, IconRefresh, IconX } from '../components/Icons';
+import { IconAlertTriangle, IconCheck, IconClock, IconEdit, IconFile, IconMapPin, IconMedal, IconRefresh, IconTrophy, IconVolume, IconX } from '../components/Icons';
 import { PillPeso } from '../components/PesoSugerido';
 import { Aviso, Insignia, aNumero } from '../components/UI';
 import { lesionesApi, sesionesApi } from '../lib/endpoints';
@@ -103,7 +103,7 @@ function EnVivo({ sesion, setSesion }: { sesion: SesionVivo; setSesion: (s: Sesi
           <div><b>{kg(sesion.volumen_kg)}</b><span>Volumen</span></div>
           <div><b className="recortar">{sesion.gym_nombre ?? 'Sin gym'}</b><span>{sesion.enfoque}</span></div>
         </div>
-        <div className="barra-subida" style={{ background: '#22332a' }} aria-hidden="true"><span style={{ width: `${pct}%`, background: 'var(--neon)' }} /></div>
+        <div className="barra-subida" aria-hidden="true"><span style={{ width: `${pct}%`, background: 'var(--neon)' }} /></div>
       </header>
 
       <main className="pantalla-sin-nav stack" style={{ gap: 12, paddingTop: 16, paddingBottom: descansoFin ? 150 : 40 }}>
@@ -206,7 +206,7 @@ function TarjetaEjercicio({ se, activo, ocupado, onMarcar, onDeshacer, onReempla
       )}
 
       {se.nota && se.reemplaza && <p className="cambio-nota">En lugar de <b>{se.reemplaza.nombre}</b>. {se.nota}</p>}
-      {se.mejor && <span className="pill-record">🏆 Tu récord: {marca(se.mejor.peso_kg, se.mejor.repeticiones)}</span>}
+      {se.mejor && <span className="pill-record"><IconTrophy width={14} height={14} className="icono-en-texto" aria-hidden="true" /> Tu récord: {marca(se.mejor.peso_kg, se.mejor.repeticiones)}</span>}
       {!se.cerrado && !terminado && <PillPeso s={se.sugerencia} />}
 
       <div className="tabla-series" role="table" aria-label={`Series de ${se.ejercicio.nombre}`}>
@@ -252,7 +252,7 @@ function FilaSerie({ se, numero, ocupado, sinPeso, onMarcar, onDeshacer }: {
             <IconCheck width={18} height={18} />
           </button>
         </span>
-        {hecha.es_record && <span className="insignia-record" role="cell">🏆 ¡Nuevo récord!</span>}
+        {hecha.es_record && <span className="insignia-record" role="cell"><IconTrophy width={12} height={12} className="icono-en-texto" aria-hidden="true" /> ¡Nuevo récord!</span>}
       </div>
     );
   }
@@ -301,12 +301,12 @@ function Descanso({ fin, total, onCambiar, onTerminar }: { fin: number; total: n
     <section className="descanso-flotante" role="timer" aria-live="polite" aria-label="Descanso">
       <div className="fila" style={{ justifyContent: 'space-between' }}>
         <div className="stack" style={{ gap: 0 }}>
-          <span style={{ fontSize: 12, color: '#8fad99', fontWeight: 700 }}>{terminado ? '¡A la siguiente serie!' : 'Descanso'}</span>
+          <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 700 }}>{terminado ? '¡A la siguiente serie!' : 'Descanso'}</span>
           <span className="cronometro" style={{ fontSize: 28 }}>{reloj(Math.ceil(Math.max(0, restante)))} <small>/ {reloj(total)}</small></span>
         </div>
-        <span style={{ fontSize: 12, color: '#8fad99' }}>🔊 Sonará al terminar</span>
+        <span style={{ fontSize: 12, color: 'var(--muted)' }}><IconVolume width={14} height={14} className="icono-en-texto" aria-hidden="true" /> Sonará al terminar</span>
       </div>
-      <div className="barra-subida" style={{ background: '#22332a' }}><span style={{ width: `${pct}%`, background: 'var(--neon)' }} /></div>
+      <div className="barra-subida"><span style={{ width: `${pct}%`, background: 'var(--neon)' }} /></div>
       <div className="grid-3">
         <button className="btn btn-claro" onClick={() => onCambiar(-15)} disabled={terminado}>−15 s</button>
         <button className="btn btn-claro" onClick={() => onCambiar(15)}>+15 s</button>
@@ -433,7 +433,9 @@ function Resumen({ sesion, setSesion }: { sesion: SesionVivo; setSesion: (s: Ses
     <div className="app-frame sesion-vivo">
       <main className="pantalla-sin-nav stack" style={{ gap: 16 }}>
         <section className={`medalla ${cuenta ? 'completa' : 'parcial'}`}>
-          <span style={{ fontSize: 40 }} aria-hidden="true">{r.estado === 'completa' ? '🏅' : '📝'}</span>
+          {r.estado === 'completa'
+            ? <IconMedal width={40} height={40} aria-hidden="true" />
+            : <IconFile width={40} height={40} aria-hidden="true" />}
           <h1 style={{ fontSize: 22 }}>{titulo}</h1>
           <p style={{ fontSize: 14 }}>{r.mensaje}</p>
           {cuenta && <span className="etiqueta-neon">CUENTA PARA TU ASISTENCIA</span>}
@@ -445,7 +447,8 @@ function Resumen({ sesion, setSesion }: { sesion: SesionVivo; setSesion: (s: Ses
             <p style={{ fontSize: 14 }}><b>¿Hiciste más series y olvidaste marcarlas?</b> Completamos las que faltan con lo planeado
               (tu último peso de hoy y el mínimo de repeticiones). Queda como sesión <b>manual</b> y no cuenta como récord.</p>
             <button className="btn btn-claro" disabled={completando} onClick={() => void completar()}>
-              ✏️ {completando ? 'Completando…' : 'Olvidé marcar series — Completar el resto con lo planeado'}
+              <IconEdit width={16} height={16} aria-hidden="true" />
+              {completando ? 'Completando…' : 'Olvidé marcar series — Completar el resto con lo planeado'}
             </button>
           </section>
         )}
@@ -468,7 +471,7 @@ function Resumen({ sesion, setSesion }: { sesion: SesionVivo; setSesion: (s: Ses
           </div>
           <div className="card stack" style={{ gap: 2 }}>
             <span className="muted" style={{ fontSize: 12.5 }}>Récords</span>
-            <b style={{ fontSize: 20 }}>{r.records.length} 🏆</b>
+            <b style={{ fontSize: 20 }}>{r.records.length} <IconTrophy width={18} height={18} className="icono-en-texto" aria-hidden="true" /></b>
             <span className="muted" style={{ fontSize: 12 }}>{sesion.enfoque}</span>
           </div>
         </div>

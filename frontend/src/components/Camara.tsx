@@ -76,13 +76,13 @@ export default function Camara({ tomadas, onFoto, onGaleria, onCamaraSistema, on
           <div className="stack" style={{ position: 'absolute', inset: 0, padding: 24, justifyContent: 'center', textAlign: 'center' }}>
             {estado === 'abriendo' && <p>Abriendo la cámara…</p>}
             {estado === 'abriendo' && tarda && <>
-              <p style={{ fontSize: 14, color: '#c9d6cd' }}>¿No se abre? Acepta el permiso de cámara si te lo pide, o cierra otras apps que la estén usando.</p>
+              <p style={{ fontSize: 14, color: 'var(--muted)' }}>¿No se abre? Acepta el permiso de cámara si te lo pide, o cierra otras apps que la estén usando.</p>
               <button className="btn btn-neon" onClick={onCamaraSistema}><IconCamera width={18} height={18} /> Usar la cámara del celular</button>
               <button className="btn btn-claro" onClick={onGaleria}><IconImage width={18} height={18} /> Elegir de la galería</button>
             </>}
             {estado === 'denegada' && <>
               <h2 style={{ fontSize: 19 }}>No tenemos permiso para usar la cámara</h2>
-              <p style={{ fontSize: 14, color: '#c9d6cd', lineHeight: 1.5 }}>
+              <p style={{ fontSize: 14, color: 'var(--muted)', lineHeight: 1.5 }}>
                 <b>Android (Chrome):</b> toca el candado junto a la dirección → Permisos → Cámara → Permitir.<br />
                 <b>iPhone (Safari):</b> toca «aA» en la barra → Configuración del sitio web → Cámara → Permitir.<br />
                 Luego vuelve a intentarlo, o sube fotos desde tu galería.
@@ -92,7 +92,7 @@ export default function Camara({ tomadas, onFoto, onGaleria, onCamaraSistema, on
             {estado === 'sin_camara' && <h2 style={{ fontSize: 19 }}>No encontramos una cámara en este dispositivo</h2>}
             {estado === 'no_soportada' && <>
               <h2 style={{ fontSize: 19 }}>Este navegador no abre la cámara dentro de la app</h2>
-              <p style={{ fontSize: 14, color: '#c9d6cd' }}>Usa la cámara de tu celular: igual puedes tomar varias fotos, una tras otra.</p>
+              <p style={{ fontSize: 14, color: 'var(--muted)' }}>Usa la cámara de tu celular: igual puedes tomar varias fotos, una tras otra.</p>
               <button className="btn btn-neon" onClick={onCamaraSistema}><IconCamera width={18} height={18} /> Abrir la cámara del celular</button>
             </>}
             {estado !== 'abriendo' && (
@@ -110,7 +110,7 @@ export default function Camara({ tomadas, onFoto, onGaleria, onCamaraSistema, on
           ? <button className="obturador" onClick={disparar} aria-label="Tomar foto" />
           : <button className="camara-boton" onClick={onCerrar} aria-label="Cerrar la cámara"><IconX width={26} height={26} />Cerrar</button>}
         <button className="camara-boton" onClick={onCerrar} aria-label={`Listo, ${tomadas} fotos tomadas`}>
-          <IconCheck width={26} height={26} style={{ color: 'var(--neon)' }} />Listo{tomadas > 0 ? ` (${tomadas})` : ''}
+          <IconCheck width={26} height={26} style={{ color: 'var(--success)' }} />Listo{tomadas > 0 ? ` (${tomadas})` : ''}
         </button>
       </div>
     </div>

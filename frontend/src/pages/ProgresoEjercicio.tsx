@@ -4,7 +4,7 @@
  */
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { IconMapPin } from '../components/Icons';
+import { IconMapPin, IconPause, IconTrophy } from '../components/Icons';
 import { kg, PillPeso } from '../components/PesoSugerido';
 import { Aviso, Volver } from '../components/UI';
 import { progresoApi } from '../lib/endpoints';
@@ -37,7 +37,7 @@ export default function ProgresoEjercicio() {
       </header>
 
       <div className="grid-2">
-        <div className="card kpi"><b>🏆 {marca(d.mejor.peso_kg, d.mejor.repeticiones)}</b><span>Tu récord</span></div>
+        <div className="card kpi"><b><IconTrophy width={18} height={18} className="icono-en-texto" aria-hidden="true" /> {marca(d.mejor.peso_kg, d.mejor.repeticiones)}</b><span>Tu récord</span></div>
         <div className="card kpi"><b>{conPeso ? kg(d.peso_actual_kg) : `${d.ultima.at(-1)?.repeticiones ?? 0} reps`}</b><span>Última vez · {fechaCorta(d.ultima_fecha)}</span></div>
         <div className="card kpi"><b>{d.veces}</b><span>{d.veces === 1 ? 'Sesión' : 'Sesiones'} desde el {fechaCorta(d.primera_fecha)}</span></div>
         <div className="card kpi"><b>{cambio > 0 ? '▲ ' : cambio < 0 ? '▼ ' : ''}{kg(Math.abs(cambio))}</b><span>Desde la primera vez</span></div>
@@ -49,7 +49,7 @@ export default function ProgresoEjercicio() {
           <PillPeso s={d.sugerencia} />
         </section>
       )}
-      {d.estancamiento && <Aviso tipo="info"><b>⏸️ {d.estancamiento.titulo}.</b> {d.estancamiento.texto}</Aviso>}
+      {d.estancamiento && <Aviso tipo="info"><b><IconPause width={16} height={16} className="icono-en-texto" aria-hidden="true" /> {d.estancamiento.titulo}.</b> {d.estancamiento.texto}</Aviso>}
 
       {conPeso && d.historial.length > 1 && <GraficoEvolucion puntos={d.historial} />}
 
@@ -62,7 +62,12 @@ export default function ProgresoEjercicio() {
               {v.gym_nombre && <span className="muted fila" style={{ fontSize: 12.5, gap: 4 }}><IconMapPin width={13} height={13} /> {v.gym_nombre}</span>}
             </span>
             <span style={{ fontSize: 13.5 }}>
-              {v.series.map(s => `${marca(s.peso_kg, s.repeticiones)}${s.es_record ? ' 🏆' : ''}`).join(' · ')}
+              {v.series.map((s, i) => (
+                <span key={`${s.numero}-${i}`}>
+                  {i > 0 && ' · '}{marca(s.peso_kg, s.repeticiones)}
+                  {s.es_record && <> <IconTrophy width={13} height={13} className="icono-en-texto" aria-hidden="true" /> récord</>}
+                </span>
+              ))}
             </span>
             {v.volumen_kg > 0 && <span className="muted" style={{ fontSize: 12 }}>Volumen: {kg(v.volumen_kg)}</span>}
           </Link>
@@ -74,7 +79,7 @@ export default function ProgresoEjercicio() {
 
 /**
  * Una sola serie (peso más alto de cada sesión) en el tiempo: línea de 2 px, puntos de 8 px, cuadrícula discreta y sin
- * leyenda (el título la nombra). Los récords llevan 🏆 además del color. Al tocar o pasar por un punto se ve su dato;
+ * leyenda de series (el título la nombra). Los récords llevan un trofeo además del color. Al tocar o pasar por un punto se ve su dato;
  * la lista "Cada sesión" de abajo es la vista en tabla.
  */
 function GraficoEvolucion({ puntos }: { puntos: VezEjercicio[] }) {
@@ -96,10 +101,10 @@ function GraficoEvolucion({ puntos }: { puntos: VezEjercicio[] }) {
     <section className="card stack" style={{ gap: 8 }} aria-labelledby="grafico-titulo">
       <div className="fila" style={{ justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
         <h2 id="grafico-titulo" style={{ fontSize: 15 }}>Peso más alto por sesión</h2>
-        <span className="muted" style={{ fontSize: 12.5 }}>🏆 = récord</span>
+        <span className="muted" style={{ fontSize: 12.5 }}><IconTrophy width={13} height={13} className="icono-en-texto" aria-hidden="true" /> = récord</span>
       </div>
       <p className="grafico-dato" aria-live="polite">
-        {sel ? <><b>{fechaCorta(sel.fecha)}:</b> {marca(sel.peso_max_kg, sel.reps_con_peso_max)}{sel.record ? ' · 🏆 récord' : ''}</>
+        {sel ? <><b>{fechaCorta(sel.fecha)}:</b> {marca(sel.peso_max_kg, sel.reps_con_peso_max)}{sel.record && <> · <IconTrophy width={13} height={13} className="icono-en-texto" aria-hidden="true" /> récord</>}</>
           : <span className="muted">Toca un punto para ver el detalle</span>}
       </p>
       <svg viewBox={`0 0 ${W} ${H}`} className="grafico" role="img"
@@ -118,7 +123,7 @@ function GraficoEvolucion({ puntos }: { puntos: VezEjercicio[] }) {
         {puntos.map((p, i) => (
           <g key={p.sesion_id}>
             <circle cx={x(i)} cy={y(p.peso_max_kg)} r={p.record ? 6 : 4.5} className={p.record ? 'grafico-punto record' : 'grafico-punto'} />
-            {p.record && <text x={x(i)} y={y(p.peso_max_kg) - 10} textAnchor="middle" fontSize="11" aria-hidden="true">🏆</text>}
+            {p.record && <g transform={`translate(${x(i) - 6} ${y(p.peso_max_kg) - 21})`} style={{ color: 'var(--success)' }} aria-hidden="true"><IconTrophy width={12} height={12} /></g>}
             {/* área de toque más grande que el punto */}
             <circle cx={x(i)} cy={y(p.peso_max_kg)} r={14} fill="transparent" style={{ cursor: 'pointer' }}
               onMouseEnter={() => setActivo(i)} onClick={() => setActivo(i)}>

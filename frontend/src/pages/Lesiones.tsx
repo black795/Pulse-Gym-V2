@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import MapaMuscular from '../components/MapaMuscular';
 import { Aviso, Insignia } from '../components/UI';
-import { IconPlus } from '../components/Icons';
+import { IconCheck, IconPlus } from '../components/Icons';
 import { ApiError } from '../lib/http';
 import { lesionesApi } from '../lib/endpoints';
 import type { Lesion, LesionesRespuesta, Zona } from '../lib/tipos';
@@ -113,7 +113,11 @@ export default function Lesiones() {
             </form>
           )}
 
-          {datos && vigentes.length === 0 && !abierto && <p className="muted" style={{ textAlign: 'center', padding: 12 }}>No tienes lesiones registradas. 💪</p>}
+          {datos && vigentes.length === 0 && !abierto && (
+            <p className="muted" style={{ textAlign: 'center', padding: 12 }}>
+              No tienes lesiones registradas. <IconCheck width={16} height={16} className="icono-en-texto" aria-hidden="true" />
+            </p>
+          )}
           {vigentes.map(l => <TarjetaLesion key={l.id} l={l} onCambio={cambiarEstado} />)}
 
           {recuperadas.length > 0 && (

@@ -5,12 +5,13 @@
  */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { IconChevronRight, IconMapPin, IconPlus } from '../components/Icons';
+import { IconChevronRight, IconFlame, IconMapPin, IconPause, IconPlus, IconRefresh, IconTrophy } from '../components/Icons';
 import { kg, LineaPeso } from '../components/PesoSugerido';
 import { Aviso, Insignia } from '../components/UI';
 import { progresoApi } from '../lib/endpoints';
 import type { Alerta, Constancia, EjercicioUsado, EstadoTerminada, HistorialSesiones } from '../lib/tipos';
 import { usePerfil } from '../lib/usePerfil';
+import { EQUIPO } from './Plan';
 
 type Filtro = 'maquina' | 'peso_libre' | 'sin_equipo' | 'todos';
 const FILTROS: { valor: Filtro; texto: string }[] = [
@@ -70,7 +71,7 @@ export default function Progreso() {
 
       {constancia && (
         <section className="grid-3 kpis-hoy" aria-label="Constancia">
-          <div className="card kpi"><b>{constancia.racha_actual} 🔥</b><span>Racha actual</span><small>Mejor: {constancia.mejor_racha}</small></div>
+          <div className="card kpi"><b>{constancia.racha_actual} <IconFlame width={18} height={18} className="icono-en-texto" aria-hidden="true" /></b><span>Racha actual</span><small>Mejor: {constancia.mejor_racha}</small></div>
           <div className="card kpi"><b>{constancia.sesiones_semana}{meta ? `/${meta}` : ''}</b><span>Esta semana</span></div>
           <div className="card kpi"><b>{constancia.sesiones_mes}</b><span>Este mes</span></div>
         </section>
@@ -78,7 +79,12 @@ export default function Progreso() {
 
       {alertas.map(a => (
         <div key={a.titulo} className="aviso aviso-info stack" style={{ gap: 4 }} role="status">
-          <b>{a.tipo === 'retorno' ? '🔄' : '⏸️'} {a.titulo}</b>
+          <b>
+            {a.tipo === 'retorno'
+              ? <IconRefresh width={16} height={16} className="icono-en-texto" aria-hidden="true" />
+              : <IconPause width={16} height={16} className="icono-en-texto" aria-hidden="true" />}{' '}
+            {a.titulo}
+          </b>
           <span>{a.texto}</span>
           {a.ejercicio_id != null && <Link to={`/progreso/ejercicios/${a.ejercicio_id}`} style={{ fontWeight: 700 }}>Ver su evolución</Link>}
         </div>
@@ -94,7 +100,7 @@ export default function Progreso() {
             </div>
           ) : (
             <>
-              <div className="chips" role="group" aria-label="Filtrar por equipo">
+              <div className="chips filtros-progreso" role="group" aria-label="Filtrar por equipo">
                 {FILTROS.map(f => (
                   <button key={f.valor} type="button" className="chip" aria-pressed={efectivo === f.valor} onClick={() => setFiltro(f.valor)}>{f.texto}</button>
                 ))}
@@ -121,7 +127,8 @@ export default function Progreso() {
                 </span>
                 <span className="muted" style={{ fontSize: 12.5 }}>
                   {s.gym_nombre && <><IconMapPin width={12} height={12} /> {s.gym_nombre} · </>}
-                  {Math.round(s.duracion_seg / 60)} min · {s.series_hechas}/{s.series_planeadas} series{s.records ? ` · ${s.records} 🏆` : ''}
+                  {Math.round(s.duracion_seg / 60)} min · {s.series_hechas}/{s.series_planeadas} series
+                  {s.records > 0 && <> · <IconTrophy width={13} height={13} className="icono-en-texto" aria-hidden="true" /> {s.records} {s.records === 1 ? 'récord' : 'récords'}</>}
                 </span>
               </span>
               <IconChevronRight width={18} height={18} style={{ flexShrink: 0, color: 'var(--muted)' }} />
@@ -137,26 +144,29 @@ export default function Progreso() {
 }
 
 function FilaEjercicio({ e }: { e: EjercicioUsado }) {
-  const cambio = e.peso_actual_kg - e.peso_inicial_kg;
+  const primera = e.ultima[0];
+  const iguales = primera && e.ultima.every(s => s.peso_kg === primera.peso_kg && s.repeticiones === primera.repeticiones);
+  const series = `${e.ultima.length} ${e.ultima.length === 1 ? 'serie' : 'series'}`;
+  const peso = iguales && primera.peso_kg > 0 ? kg(primera.peso_kg) : null;
   return (
-    <Link to={`/progreso/ejercicios/${e.ejercicio.id}`} className="card stack" style={{ gap: 5, textDecoration: 'none', color: 'inherit' }}>
-      <span className="fila" style={{ justifyContent: 'space-between', gap: 8 }}>
-        <b style={{ fontSize: 15 }}>{e.ejercicio.nombre}</b>
-        <IconChevronRight width={18} height={18} style={{ flexShrink: 0, color: 'var(--muted)' }} />
-      </span>
+    <Link to={`/progreso/ejercicios/${e.ejercicio.id}`} className="card stack" style={{ gap: 5, textDecoration: 'none', color: 'inherit', overflowWrap: 'anywhere' }}>
+      <b style={{ fontSize: 15 }}>{e.ejercicio.nombre}</b>
       <span className="muted" style={{ fontSize: 12.5 }}>
-        {e.ejercicio.maquinas.length ? e.ejercicio.maquinas.join(' o ') : e.ejercicio.musculo_principal} · {e.veces} {e.veces === 1 ? 'vez' : 'veces'} · última {fechaCorta(e.ultima_fecha)}
+        {e.ejercicio.musculo_principal || EQUIPO[e.ejercicio.categoria_equipo]}
       </span>
       <span style={{ fontSize: 14 }}>
-        Última vez: <b>{e.ultima.map(m => marca(m.peso_kg, m.repeticiones)).join(' · ')}</b>
+        Última sesión · {fechaCorta(e.ultima_fecha)} ·{' '}
+        <b>
+          {series}
+          {iguales && ` × ${primera.repeticiones} reps`}
+          {peso && <> · <span style={{ whiteSpace: 'nowrap' }}>{peso}</span></>}
+        </b>
       </span>
-      <span className="fila" style={{ gap: 8, flexWrap: 'wrap', fontSize: 13 }}>
-        <span className="pill-record">🏆 {marca(e.mejor.peso_kg, e.mejor.repeticiones)}</span>
-        {e.veces > 1 && cambio !== 0 && (
-          <span className={cambio > 0 ? 'cambio-sube' : 'cambio-baja'}>{cambio > 0 ? '▲' : '▼'} {kg(Math.abs(cambio))} desde la primera vez</span>
-        )}
-      </span>
+      <span className="pill-record"><IconTrophy width={14} height={14} className="icono-en-texto" aria-hidden="true" /> Récord personal · {marca(e.mejor.peso_kg, e.mejor.repeticiones)}</span>
       <LineaPeso s={e.sugerencia} />
+      <span className="fila" style={{ gap: 4, color: 'var(--primary)', fontSize: 13, fontWeight: 700 }}>
+        Ver historial y evolución <IconChevronRight width={16} height={16} aria-hidden="true" style={{ flexShrink: 0 }} />
+      </span>
     </Link>
   );
 }

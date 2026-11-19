@@ -161,6 +161,64 @@ export const IconTrendingUp = (p: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+export const IconTrendingDown = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps} {...p}>
+    <polyline points="1 6 8.5 13.5 13.5 8.5 23 18" />
+    <polyline points="17 18 23 18 23 12" />
+  </svg>
+);
+
+export const IconFlame = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps} {...p}>
+    <path d="M12 22c-4 0-7-3-7-7 0-3 2-5 4-7 0 2 1 3 2 3 2-3 2-6 1-9 4 3 7 7 7 13 0 4-3 7-7 7Z" />
+  </svg>
+);
+
+export const IconTrophy = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps} {...p}>
+    <path d="M7 3h10v7a5 5 0 0 1-10 0V3ZM7 5H3v2a4 4 0 0 0 4 4m10-6h4v2a4 4 0 0 1-4 4m-5 4v6m-4 0h8" />
+  </svg>
+);
+
+export const IconMedal = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps} {...p}>
+    <path d="m9 11-5-9h5l3 6 3-6h5l-5 9" />
+    <circle cx="12" cy="16" r="6" />
+    <path d="m11 16 1-1v3" />
+  </svg>
+);
+
+export const IconVolume = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps} {...p}>
+    <path d="M3 9h4l5-4v14l-5-4H3V9Z" />
+    <path d="M16 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12" />
+  </svg>
+);
+
+export const IconSparkle = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps} {...p}>
+    <path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z" />
+  </svg>
+);
+
+export const IconTarget = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps} {...p}>
+    <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" />
+  </svg>
+);
+
+export const IconPause = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps} {...p}>
+    <path d="M9 5v14m6-14v14" />
+  </svg>
+);
+
+export const IconPlay = (p: React.SVGProps<SVGSVGElement>) => (
+  <svg {...iconProps} {...p}>
+    <polygon points="6 4 20 12 6 20 6 4" />
+  </svg>
+);
+
 export const IconCamera = (p: React.SVGProps<SVGSVGElement>) => (
   <svg {...iconProps} {...p}>
     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />

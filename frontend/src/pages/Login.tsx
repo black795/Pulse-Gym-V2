@@ -21,7 +21,7 @@ export default function Login() {
   }
 
   return (
-    <div className="oscura pantalla-sin-nav">
+    <div className="oscura pantalla-sin-nav login">
       <div style={{ padding: '28px 0 32px' }}><Logo /></div>
       <h1 style={{ fontSize: 26, marginBottom: 6 }}>Bienvenido de vuelta</h1>
       <p className="muted" style={{ marginBottom: 24 }}>Entra para ver tu plan de hoy.</p>
@@ -30,7 +30,7 @@ export default function Login() {
         <Campo etiqueta="Correo" type="email" autoComplete="email" inputMode="email" value={email} onChange={e => setEmail(e.target.value)} required />
         <Campo etiqueta="Contraseña" type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required />
         <button className="btn btn-neon" disabled={enviando || !email || !password}>{enviando ? 'Entrando…' : 'Entrar'}</button>
-        <Link to="/recuperar" className="btn btn-texto" style={{ alignSelf: 'center' }}>Olvidé mi contraseña</Link>
+        <Link to="/recuperar" className="btn btn-texto login-recuperar" style={{ alignSelf: 'center' }}>Olvidé mi contraseña</Link>
       </form>
       <p className="muted" style={{ textAlign: 'center', marginTop: 20, fontSize: 14 }}>
         ¿Primera vez? <Link to="/registro" style={{ color: 'var(--neon)', fontWeight: 700 }}>Crear mi cuenta</Link>
