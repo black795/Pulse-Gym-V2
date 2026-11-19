@@ -144,6 +144,7 @@ export default function Progreso() {
 }
 
 function FilaEjercicio({ e }: { e: EjercicioUsado }) {
+  const cambio = e.peso_actual_kg - e.peso_inicial_kg;
   const primera = e.ultima[0];
   const iguales = primera && e.ultima.every(s => s.peso_kg === primera.peso_kg && s.repeticiones === primera.repeticiones);
   const series = `${e.ultima.length} ${e.ultima.length === 1 ? 'serie' : 'series'}`;
@@ -161,6 +162,12 @@ function FilaEjercicio({ e }: { e: EjercicioUsado }) {
           {iguales && ` × ${primera.repeticiones} reps`}
           {peso && <> · <span style={{ whiteSpace: 'nowrap' }}>{peso}</span></>}
         </b>
+      </span>
+      <span className="muted" style={{ fontSize: 12.5 }}>
+        {e.veces} {e.veces === 1 ? 'sesión' : 'sesiones'}
+        {e.veces > 1 && cambio !== 0 && (
+          <> · {cambio > 0 ? '+' : '−'}{kg(Math.abs(cambio))} desde la primera sesión</>
+        )}
       </span>
       <span className="pill-record"><IconTrophy width={14} height={14} className="icono-en-texto" aria-hidden="true" /> Récord personal · {marca(e.mejor.peso_kg, e.mejor.repeticiones)}</span>
       <LineaPeso s={e.sugerencia} />
