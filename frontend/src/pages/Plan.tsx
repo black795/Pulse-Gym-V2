@@ -4,12 +4,12 @@
  */
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { IconCalendar, IconClock, IconRefresh, IconShield, IconZap } from '../components/Icons';
+import { IconCalendar, IconChevronDown, IconClock, IconRefresh, IconShield, IconZap } from '../components/Icons';
 import { LineaPeso } from '../components/PesoSugerido';
 import { Aviso, Insignia } from '../components/UI';
 import { planApi } from '../lib/endpoints';
 import { ApiError } from '../lib/http';
-import type { DiaSemana, PlanEstado, RutinaDia } from '../lib/tipos';
+import type { DiaSemana, Plan, PlanEstado, RutinaDia } from '../lib/tipos';
 
 export const DIAS: { valor: DiaSemana; corto: string }[] = [
   { valor: 'lunes', corto: 'Lun' }, { valor: 'martes', corto: 'Mar' }, { valor: 'miercoles', corto: 'Mié' },
@@ -125,12 +125,18 @@ export default function Plan() {
 
       {plan && (
         <>
-          <section className="card stack" style={{ gap: 8, borderColor: 'var(--neon)', boxShadow: '0 0 0 3px rgba(182,255,69,.18)' }}>
+          <section className="card stack" style={{ gap: 8, borderColor: 'var(--neon)', boxShadow: '0 0 0 3px var(--primary-tint)' }}>
             <h2 style={{ fontSize: 16 }}>Por qué este plan</h2>
-            <p style={{ fontSize: 14, lineHeight: 1.5 }}>{plan.explicacion}</p>
-            <p className="muted" style={{ fontSize: 12.5 }}>
-              Esquema: {plan.esquema_texto}.{plan.modelo ? ` Armado por ${plan.modelo === 'simulada' ? 'la IA simulada' : plan.modelo} en ${(plan.duracion_ms / 1000).toFixed(1)} s.` : ''}
-            </p>
+            <p style={{ fontSize: 14, lineHeight: 1.5, overflowWrap: 'anywhere' }}>{plan.explicacion}</p>
+            <details>
+              <summary className="control-detalles">
+                Ver datos del plan
+                <IconChevronDown width={16} height={16} aria-hidden="true" />
+              </summary>
+              <p className="muted" style={{ fontSize: 12.5, overflowWrap: 'anywhere' }}>
+                Esquema: {plan.esquema_texto}.{plan.modelo ? ` Armado por ${plan.modelo === 'simulada' ? 'la IA simulada' : plan.modelo} en ${(plan.duracion_ms / 1000).toFixed(1)} s.` : ''}
+              </p>
+            </details>
           </section>
 
           {plan.avisos.map(a => <Aviso key={a} tipo="info">{a}</Aviso>)}
@@ -144,7 +150,7 @@ export default function Plan() {
             ))}
           </div>
 
-          {dia && <DiaDelPlan dia={dia} />}
+          {dia && <DiaDelPlan dia={dia} origen={plan.origen} />}
 
           {!editarDias && <BotonRegenerar className="solo-movil" restantes={estado!.regeneraciones_restantes} disabled={armando} onClick={() => setEditarDias(true)} />}
         </>
@@ -162,7 +168,7 @@ function BotonRegenerar({ className, restantes, disabled, onClick }: { className
   );
 }
 
-function DiaDelPlan({ dia }: { dia: RutinaDia }) {
+function DiaDelPlan({ dia, origen }: { dia: RutinaDia; origen: Plan['origen'] }) {
   return (
     <section className="stack" style={{ gap: 10 }} aria-label={`${dia.dia_nombre}: ${dia.enfoque}`}>
       <div className="stack" style={{ gap: 4 }}>
@@ -174,25 +180,58 @@ function DiaDelPlan({ dia }: { dia: RutinaDia }) {
         {dia.explicacion && <p style={{ fontSize: 13.5, lineHeight: 1.45 }}>{dia.explicacion}</p>}
       </div>
       <div className="grilla-ejercicios">
-        {dia.ejercicios.map(e => (
-          <article key={e.id} className="card ejercicio">
-            <span className="ejercicio-orden">{e.orden}</span>
-            <div className="stack" style={{ gap: 4, minWidth: 0 }}>
-              <div className="fila" style={{ gap: 8, flexWrap: 'wrap' }}>
-                <b style={{ fontSize: 15 }}>{e.ejercicio.nombre}</b>
-                {e.precaucion && <Insignia tono="aviso">Con precaución</Insignia>}
+        {dia.ejercicios.map(e => {
+          const equipo = e.ejercicio.maquinas.length ? e.ejercicio.maquinas.join(' o ') : EQUIPO[e.ejercicio.categoria_equipo];
+          const sugerencia = e.peso_sugerido;
+          // Los planes con IA no distinguen los motivos con instrucciones de seguridad.
+          const motivoVisible = origen !== 'reglas' || e.precaucion;
+          // El texto de retorno también puede indicar que se empiece suave sin una lesión registrada.
+          const pesoVisible = e.precaucion || sugerencia?.tipo === 'retorno';
+          const apartados = [
+            { titulo: '¿Por qué este ejercicio?', texto: motivoVisible ? null : e.motivo },
+            { titulo: 'Recomendación de peso', texto: pesoVisible ? null : sugerencia?.texto },
+            { titulo: 'Equipamiento', texto: equipo },
+          ].filter(({ texto }) => texto);
+          return (
+            <article key={e.id} className="card ejercicio">
+              <span className="ejercicio-orden">{e.orden}</span>
+              <div className="stack" style={{ gap: 4, minWidth: 0, overflowWrap: 'anywhere' }}>
+                <div className="fila" style={{ gap: 8, flexWrap: 'wrap' }}>
+                  <b style={{ fontSize: 15 }}>{e.ejercicio.nombre}</b>
+                  {e.precaucion && <Insignia tono="aviso">Con precaución</Insignia>}
+                </div>
+                {e.ejercicio.musculo_principal && <span className="muted" style={{ fontSize: 12.5 }}>{e.ejercicio.musculo_principal}</span>}
+                <div className="fila" style={{ flexWrap: 'wrap', gap: '2px 12px', fontSize: 14, fontWeight: 700 }}>
+                  <span>{e.series} series × {repeticiones(e.reps_min, e.reps_max)} reps</span>
+                  <span>Descanso {descanso(e.descanso_seg)}</span>
+                </div>
+                <LineaPeso s={sugerencia} compacta />
+                {motivoVisible && e.motivo && <p className="muted" style={{ fontSize: 13 }}>{e.motivo}</p>}
+                {pesoVisible && sugerencia?.texto && <p className="muted" style={{ fontSize: 13 }}>{sugerencia.texto}</p>}
+                {apartados.length > 0 && (
+                  <details className="detalles-ejercicio">
+                    <summary className="control-detalles">
+                      <span>
+                        <span className="detalles-ver">Ver detalles</span>
+                        <span className="detalles-ocultar">Ocultar detalles</span>
+                        <span className="sr-only">{` de ${e.ejercicio.nombre}`}</span>
+                      </span>
+                      <IconChevronDown width={16} height={16} aria-hidden="true" />
+                    </summary>
+                    <dl className="stack" style={{ gap: 8 }}>
+                      {apartados.map(({ titulo, texto }) => (
+                        <div key={titulo} className="stack" style={{ gap: 2 }}>
+                          <dt className="muted" style={{ fontSize: 12.5, fontWeight: 700 }}>{titulo}</dt>
+                          <dd style={{ fontSize: 13 }}>{texto}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </details>
+                )}
               </div>
-              <span className="muted" style={{ fontSize: 12.5 }}>
-                {e.ejercicio.musculo_principal} · {e.ejercicio.maquinas.length ? e.ejercicio.maquinas.join(' o ') : EQUIPO[e.ejercicio.categoria_equipo]}
-              </span>
-              <span style={{ fontSize: 14, fontWeight: 700 }}>
-                {e.series} series × {repeticiones(e.reps_min, e.reps_max)} reps · descanso {descanso(e.descanso_seg)}
-              </span>
-              <LineaPeso s={e.peso_sugerido} />
-              {e.motivo && <span className="muted" style={{ fontSize: 13 }}>{e.motivo}</span>}
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

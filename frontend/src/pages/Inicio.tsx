@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Aviso, Insignia } from '../components/UI';
-import { IconActivity, IconCamera, IconDumbbell, IconLock, IconMapPin, IconZap } from '../components/Icons';
+import { IconActivity, IconCamera, IconDumbbell, IconFlame, IconLock, IconMapPin, IconPlay, IconRefresh, IconZap } from '../components/Icons';
 import { useAuth } from '../features/auth/AuthContext';
 import { LineaPeso } from '../components/PesoSugerido';
 import { fechaLocal, gymsApi, planApi, progresoApi, sesionesApi } from '../lib/endpoints';
@@ -101,7 +101,7 @@ export default function Inicio() {
     <div className="pantalla stack" style={{ gap: 16 }}>
       <header style={{ padding: '8px 0 4px' }}>
         <p className="muted" style={{ fontSize: 14 }}>Hola,</p>
-        <h1 style={{ fontSize: 26 }}>{primerNombre} 👋</h1>
+        <h1 style={{ fontSize: 26 }}>{primerNombre}</h1>
       </header>
 
       {(errorPerfil || error) && <Aviso>{errorPerfil ?? error}</Aviso>}
@@ -127,8 +127,8 @@ export default function Inicio() {
         <Link to={`/sesion/${enCurso}`} className="hero-hoy fila" style={{ textDecoration: 'none', gap: 12 }}>
           <IconActivity style={{ color: 'var(--neon)', flexShrink: 0 }} />
           <span className="stack" style={{ gap: 2 }}>
-            <b style={{ color: '#fff', fontSize: 16 }}>Tienes una rutina en curso</b>
-            <span style={{ color: '#b9cbbf', fontSize: 13.5 }}>Toca para continuar donde la dejaste.</span>
+            <b style={{ color: 'var(--ink)', fontSize: 16 }}>Tienes una rutina en curso</b>
+            <span style={{ color: 'var(--muted)', fontSize: 13.5 }}>Toca para continuar donde la dejaste.</span>
           </span>
         </Link>
       )}
@@ -169,7 +169,7 @@ export default function Inicio() {
       {/* Hoy no toca: ofrecer adelantar */}
       {hoy && hoy.plan_existe && !sesion && !eligiendo && hoy.siguiente_dia && (
         <section className="card stack" style={{ gap: 10 }}>
-          <h2 style={{ fontSize: 17 }}>Hoy, {hoy.dia_nombre.toLowerCase()}, descansas 😌</h2>
+          <h2 style={{ fontSize: 17 }}>Hoy, {hoy.dia_nombre.toLowerCase()}, descansas</h2>
           <p className="muted" style={{ fontSize: 14 }}>
             Descansar también es parte del plan. Tu próximo día es el {hoy.siguiente_dia.dia_nombre.toLowerCase()}: {hoy.siguiente_dia.enfoque.toLowerCase()}.
           </p>
@@ -189,8 +189,8 @@ export default function Inicio() {
               </button>
             )}
           </div>
-          <h2 id="sesion-hoy" style={{ fontSize: 22, color: '#fff' }}>{sesion.enfoque}</h2>
-          <p style={{ fontSize: 13.5, color: '#b9cbbf' }}>
+          <h2 id="sesion-hoy" style={{ fontSize: 22, color: 'var(--ink)' }}>{sesion.enfoque}</h2>
+          <p style={{ fontSize: 13.5, color: 'var(--muted)' }}>
             {sesion.ejercicios.length} ejercicios · ~{sesion.minutos_estimados} min
             {sesion.cambios > 0
               ? ` · ${sesion.origen === 'ia' ? 'La IA adaptó' : 'Adaptamos'} ${sesion.cambios} ${sesion.cambios === 1 ? 'ejercicio' : 'ejercicios'} a este gym`
@@ -199,7 +199,7 @@ export default function Inicio() {
           {cargando && <p className="pulse-latido" style={{ fontSize: 13, color: 'var(--neon)' }}>Adaptando…</p>}
           {enCurso == null && sesion.ejercicios.length > 0 && (
             <button className="btn btn-neon" disabled={cargando || iniciando} onClick={() => void iniciar()}>
-              {iniciando ? 'Preparando tu rutina…' : '▶ Iniciar rutina de hoy'}
+              {iniciando ? 'Preparando tu rutina…' : <><IconPlay width={16} height={16} aria-hidden="true" /> Iniciar rutina de hoy</>}
             </button>
           )}
         </section>
@@ -208,7 +208,10 @@ export default function Inicio() {
       {sesion && !eligiendo && (
         <>
           {sesion.ejercicios.some(e => e.peso_sugerido?.tipo === 'retorno') && (
-            <Aviso tipo="info">🔄 Volviste después de un tiempo: hoy bajamos un 10 % los pesos de los ejercicios que no hacías hace 2 semanas o más, para cuidar tus articulaciones.</Aviso>
+            <Aviso tipo="info">
+              <IconRefresh width={16} height={16} className="icono-en-texto" aria-hidden="true" />{' '}
+              Volviste después de un tiempo: hoy bajamos un 10 % los pesos de los ejercicios que no hacías hace 2 semanas o más, para cuidar tus articulaciones.
+            </Aviso>
           )}
           {sesion.avisos.map(a => <Aviso key={a} tipo="info">{a}</Aviso>)}
           {sesion.sugerir_fotos && sesion.gym_id && (
@@ -245,7 +248,7 @@ export default function Inicio() {
       {/* PG-38: racha y asistencia; PG-39: registrar lo que no se anotó */}
       {constancia && (
         <div className="grid-3 kpis-hoy">
-          <Link to="/progreso" className="card kpi"><b>{constancia.racha_actual} 🔥</b><span>Racha (días)</span></Link>
+          <Link to="/progreso" className="card kpi"><b>{constancia.racha_actual} <IconFlame width={18} height={18} className="icono-en-texto" aria-hidden="true" /></b><span>Racha (días)</span></Link>
           <Link to="/progreso" className="card kpi"><b>{constancia.sesiones_semana}</b><span>Esta semana</span></Link>
           <Link to="/progreso" className="card kpi"><b>{constancia.sesiones_mes}</b><span>Este mes</span></Link>
         </div>

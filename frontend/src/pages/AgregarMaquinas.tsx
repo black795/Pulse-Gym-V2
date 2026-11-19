@@ -245,7 +245,7 @@ function FilaFoto({ item: i, onRevisar, onManual, onReintentar, onQuitar }: {
       <img className="miniatura" src={i.vista} alt="" />
       <div className="stack" style={{ gap: 6, flex: 1, minWidth: 0 }}>
         <span style={{ fontSize: 13.5, fontWeight: 600, color: i.estado === 'error' ? 'var(--danger)' : undefined }}>
-          {i.estado === 'listo' && <IconCheck width={15} height={15} style={{ color: 'var(--primary)', verticalAlign: -2, marginRight: 4 }} />}
+          {i.estado === 'listo' && <IconCheck width={15} height={15} style={{ color: 'var(--success)', verticalAlign: -2, marginRight: 4 }} />}
           {i.estado === 'error' && <IconAlertTriangle width={15} height={15} style={{ verticalAlign: -2, marginRight: 4 }} />}
           {texto[i.estado]}
         </span>

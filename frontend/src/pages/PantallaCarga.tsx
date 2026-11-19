@@ -7,7 +7,7 @@ export default function PantallaCarga() {
         <div className="pulse-latido" style={{ width: 52, height: 52, borderRadius: 14, background: 'var(--neon)', display: 'grid', placeItems: 'center' }}>
           <IconPulse style={{ color: 'var(--sidebar)', width: 28, height: 28, strokeWidth: 2.5 }} />
         </div>
-        <span style={{ color: '#8fad99', fontSize: 13.5, fontWeight: 600 }}>Cargando Pulse Gym…</span>
+        <span style={{ color: 'var(--muted)', fontSize: 13.5, fontWeight: 600 }}>Cargando Pulse Gym…</span>
       </div>
     </div>
   );

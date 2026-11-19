@@ -38,8 +38,8 @@ export function Volver({ a, texto = 'Volver' }: { a: string; texto?: string }) {
 
 export function Insignia({ tono, children }: { tono: 'ok' | 'aviso' | 'peligro' | 'neutro'; children: ReactNode }) {
   const t = {
-    ok: ['var(--primary-tint)', 'var(--primary-dark)'], aviso: ['var(--warning-tint)', 'var(--warning)'],
-    peligro: ['var(--danger-tint)', 'var(--danger)'], neutro: ['#EEF2EF', 'var(--muted)'],
+    ok: ['var(--success-tint)', 'var(--success)'], aviso: ['var(--warning-tint)', 'var(--warning)'],
+    peligro: ['var(--danger-tint)', 'var(--danger)'], neutro: ['var(--black-2)', 'var(--muted)'],
   }[tono];
   return <span className="insignia" style={{ background: t[0], color: t[1] }}>{children}</span>;
 }
